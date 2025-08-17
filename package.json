@@ -2,10 +2,10 @@
   "name": "brand-logo",
   "version": "1.0.0",
   "license": "UNLICENSED",
-  "scripts": {
-    "build": "remix build",
-    "start": "remix-serve build"
-  },
+ "scripts": {
+  "build": "remix build",
+  "start": "remix-serve build/index.js"
+},
   "dependencies": {
     "@remix-run/dev": "^2.0.0",
     "@remix-run/node": "^2.17.0",
