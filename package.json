@@ -3,14 +3,13 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "shopify": "shopify",
-    "build": "shopify app build",
-    "dev": "shopify app dev",
-    "info": "shopify app info",
-    "generate": "shopify app generate",
-    "deploy": "shopify app deploy"
+  "build": "remix build",
+  "start": "remix-serve ./build"
   },
-  "dependencies": {},
+  "dependencies": {
+  "@remix-run/dev": "^2.0.0",
+  "@remix-run/serve": "^2.0.0"
+},
   "trustedDependencies": [
     "@shopify/plugin-cloudflare"
   ],
