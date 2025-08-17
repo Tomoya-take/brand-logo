@@ -1,0 +1,88 @@
+{% style %}
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  .logo-bar {
+    display: grid;
+    gap: {{ block.settings.gap_pc }}px;
+    justify-items: center;
+    align-items: center;
+    max-width: 1800px;
+    margin: 0 auto;
+    background-color: {{ block.settings.bg_color }};
+    padding-left: {{ block.settings.padding_lr_pc }}px;
+    padding-right: {{ block.settings.padding_lr_pc }}px;
+  }
+  .logo-bar.pc-cols-{{ block.settings.pc_columns }} {
+    grid-template-columns: repeat({{ block.settings.pc_columns }}, 1fr);
+  }
+  @media (max-width: 768px) {
+    .logo-bar {
+      padding-left: {{ block.settings.padding_lr_sp }}px;
+      padding-right: {{ block.settings.padding_lr_sp }}px;
+      gap: {{ block.settings.gap_sp }}px;
+    }
+    .logo-bar.sp-cols-{{ block.settings.sp_columns }} {
+      grid-template-columns: repeat({{ block.settings.sp_columns }}, 1fr);
+    }
+  }
+{% endstyle %}
+
+<div class="logo-bar pc-cols-{{ block.settings.pc_columns }} sp-cols-{{ block.settings.sp_columns }}">
+  {% for i in (1..8) %}
+    {% assign logo_key = 'logo_' | append: i %}
+    {% assign link_key = 'link_' | append: i %}
+    {% if block.settings[logo_key] != blank %}
+      <div>
+        {% if block.settings[link_key] != blank %}
+          <a href="{{ block.settings[link_key] }}">
+        {% endif %}
+        <img src="{{ block.settings[logo_key] | image_url }}" alt="Logo {{ i }}">
+        {% if block.settings[link_key] != blank %}
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+{% schema %}
+{
+  "name": "Brand Logo List",
+  "target": "section",
+  "settings": [
+    { "type": "range", "id": "pc_columns", "label": "PC Columns", "min": 1, "max": 8, "default": 4 },
+    { "type": "range", "id": "sp_columns", "label": "SP Columns", "min": 1, "max": 4, "default": 2 },
+    { "type": "range", "id": "gap_pc", "label": "Gap (PC) px", "min": 0, "max": 50, "default": 20 },
+    { "type": "range", "id": "gap_sp", "label": "Gap (SP) px", "min": 0, "max": 50, "default": 20 },
+    { "type": "color", "id": "bg_color", "label": "Background color", "default": "#ffffff" },
+    { "type": "range", "id": "padding_lr_pc", "label": "PC Padding Left & Right (px)", "min": 0, "max": 100, "default": 20 },
+    { "type": "range", "id": "padding_lr_sp", "label": "SP Padding Left & Right (px)", "min": 0, "max": 100, "default": 20 },
+
+    { "type": "image_picker", "id": "logo_1", "label": "Logo 1" },
+    { "type": "url", "id": "link_1", "label": "Link 1" },
+
+    { "type": "image_picker", "id": "logo_2", "label": "Logo 2" },
+    { "type": "url", "id": "link_2", "label": "Link 2" },
+
+    { "type": "image_picker", "id": "logo_3", "label": "Logo 3" },
+    { "type": "url", "id": "link_3", "label": "Link 3" },
+
+    { "type": "image_picker", "id": "logo_4", "label": "Logo 4" },
+    { "type": "url", "id": "link_4", "label": "Link 4" },
+
+    { "type": "image_picker", "id": "logo_5", "label": "Logo 5" },
+    { "type": "url", "id": "link_5", "label": "Link 5" },
+
+    { "type": "image_picker", "id": "logo_6", "label": "Logo 6" },
+    { "type": "url", "id": "link_6", "label": "Link 6" },
+
+    { "type": "image_picker", "id": "logo_7", "label": "Logo 7" },
+    { "type": "url", "id": "link_7", "label": "Link 7" },
+
+    { "type": "image_picker", "id": "logo_8", "label": "Logo 8" },
+    { "type": "url", "id": "link_8", "label": "Link 8" }
+  ]
+}
+{% endschema %}
