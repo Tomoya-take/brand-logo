@@ -113,9 +113,9 @@ import {
   Scripts,
   ScrollRestoration
 } from "@remix-run/react";
-import { Provider } from "@shopify/app-bridge-react";
+import AppBridgeReact from "@shopify/app-bridge-react";
 import { jsx as jsx2, jsxs } from "react/jsx-runtime";
-var links = () => [];
+var { Provider } = AppBridgeReact, links = () => [];
 function App() {
   let host = new URLSearchParams(
     typeof window < "u" ? window.location.search : ""
@@ -128,7 +128,7 @@ function App() {
       /* @__PURE__ */ jsx2(Links, {})
     ] }),
     /* @__PURE__ */ jsxs("body", { children: [
-      /* @__PURE__ */ jsx2(Provider, { config: { apiKey: "9e0bf26577909d0642a6fc4cf844d5bb", host }, children: /* @__PURE__ */ jsx2(Outlet, {}) }),
+      typeof window < "u" ? /* @__PURE__ */ jsx2(Provider, { config: { apiKey: "9e0bf26577909d0642a6fc4cf844d5bb", host }, children: /* @__PURE__ */ jsx2(Outlet, {}) }) : /* @__PURE__ */ jsx2(Outlet, {}),
       /* @__PURE__ */ jsx2(ScrollRestoration, {}),
       /* @__PURE__ */ jsx2(Scripts, {}),
       /* @__PURE__ */ jsx2(LiveReload, {})
@@ -151,7 +151,7 @@ function Index() {
 }
 
 // server-assets-manifest:@remix-run/dev/assets-manifest
-var assets_manifest_default = { entry: { module: "/build/entry.client-EA45NWVN.js", imports: ["/build/_shared/chunk-CL7ZY5MS.js", "/build/_shared/chunk-MFPRU5OA.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-TPNIWH5U.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-FBC5HM2H.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "7d3ac2fa", hmr: void 0, url: "/build/manifest-7D3AC2FA.js" };
+var assets_manifest_default = { entry: { module: "/build/entry.client-EA45NWVN.js", imports: ["/build/_shared/chunk-CL7ZY5MS.js", "/build/_shared/chunk-MFPRU5OA.js"] }, routes: { root: { id: "root", parentId: void 0, path: "", index: void 0, caseSensitive: void 0, module: "/build/root-LWZZWXOZ.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 }, "routes/_index": { id: "routes/_index", parentId: "root", path: void 0, index: !0, caseSensitive: void 0, module: "/build/routes/_index-FBC5HM2H.js", imports: void 0, hasAction: !1, hasLoader: !1, hasClientAction: !1, hasClientLoader: !1, hasErrorBoundary: !1 } }, version: "3d682e04", hmr: void 0, url: "/build/manifest-3D682E04.js" };
 
 // server-entry-module:@remix-run/dev/server-build
 var mode = "production", assetsBuildDirectory = "public\\build", future = { v3_fetcherPersist: !1, v3_relativeSplatPath: !1, v3_throwAbortReason: !1, v3_routeConfig: !1, v3_singleFetch: !1, v3_lazyRouteDiscovery: !1, unstable_optimizeDeps: !1 }, publicPath = "/build/", entry = { module: entry_server_node_exports }, routes = {
