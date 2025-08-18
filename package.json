@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "remix build",
     "build": "remix build",
-    "start": "remix-serve ./build/index.js"
+    "start": "remix-serve ./build"
   },
   "dependencies": {
     "@remix-run/dev": "^2.0.0",
