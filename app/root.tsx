@@ -8,10 +8,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
-// ❌ NG
-// import { Provider } from "@shopify/app-bridge-react";
-
-// ✅ OK
+// ✅ CommonJS モジュールなので default import から取り出す
 import AppBridgeReact from "@shopify/app-bridge-react";
 const { Provider } = AppBridgeReact;
 
@@ -20,10 +17,13 @@ export const links: LinksFunction = () => {
 };
 
 export default function App() {
-  const host = new URLSearchParams(
-    typeof window !== "undefined" ? window.location.search : ""
-  ).get("host") || "";
+  // host パラメータを取得
+  const host =
+    new URLSearchParams(
+      typeof window !== "undefined" ? window.location.search : ""
+    ).get("host") || "";
 
+  // パートナーダッシュボードの Client ID
   const apiKey = "9e0bf26577909d0642a6fc4cf844d5bb";
 
   return (
@@ -35,9 +35,14 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Provider config={{ apiKey, host }}>
+        {/* ✅ SSRガードを入れることで Render デプロイ時のエラーを防ぐ */}
+        {typeof window !== "undefined" ? (
+          <Provider config={{ apiKey, host }}>
+            <Outlet />
+          </Provider>
+        ) : (
           <Outlet />
-        </Provider>
+        )}
 
         <ScrollRestoration />
         <Scripts />
@@ -46,5 +51,6 @@ export default function App() {
     </html>
   );
 }
+
 
 
