@@ -3,7 +3,7 @@
     max-width: 100%;
     height: auto;
   }
-  .logo-bar {
+  .logo-bar-{{ block.id }} {
     display: grid;
     gap: {{ block.settings.gap_pc }}px;
     justify-items: center;
@@ -14,22 +14,22 @@
     padding-left: {{ block.settings.padding_lr_pc }}px;
     padding-right: {{ block.settings.padding_lr_pc }}px;
   }
-  .logo-bar.pc-cols-{{ block.settings.pc_columns }} {
+  .logo-bar-{{ block.id }}.pc-cols-{{ block.settings.pc_columns }} {
     grid-template-columns: repeat({{ block.settings.pc_columns }}, 1fr);
   }
   @media (max-width: 768px) {
-    .logo-bar {
+    .logo-bar-{{ block.id }} {
       padding-left: {{ block.settings.padding_lr_sp }}px;
       padding-right: {{ block.settings.padding_lr_sp }}px;
       gap: {{ block.settings.gap_sp }}px;
     }
-    .logo-bar.sp-cols-{{ block.settings.sp_columns }} {
+    .logo-bar-{{ block.id }}.sp-cols-{{ block.settings.sp_columns }} {
       grid-template-columns: repeat({{ block.settings.sp_columns }}, 1fr);
     }
   }
 {% endstyle %}
 
-<div class="logo-bar pc-cols-{{ block.settings.pc_columns }} sp-cols-{{ block.settings.sp_columns }}">
+<div class="logo-bar-{{ block.id }} pc-cols-{{ block.settings.pc_columns }} sp-cols-{{ block.settings.sp_columns }}">
   {% for i in (1..8) %}
     {% assign logo_key = 'logo_' | append: i %}
     {% assign link_key = 'link_' | append: i %}
@@ -46,6 +46,7 @@
     {% endif %}
   {% endfor %}
 </div>
+
 
 {% schema %}
 {
