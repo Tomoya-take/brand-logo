@@ -8,11 +8,24 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+// ❌ NG
+// import { Provider } from "@shopify/app-bridge-react";
+
+// ✅ OK
+import AppBridgeReact from "@shopify/app-bridge-react";
+const { Provider } = AppBridgeReact;
+
 export const links: LinksFunction = () => {
   return [];
 };
 
 export default function App() {
+  const host = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : ""
+  ).get("host") || "";
+
+  const apiKey = "9e0bf26577909d0642a6fc4cf844d5bb";
+
   return (
     <html lang="en">
       <head>
@@ -22,7 +35,10 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <Provider config={{ apiKey, host }}>
+          <Outlet />
+        </Provider>
+
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
@@ -30,3 +46,5 @@ export default function App() {
     </html>
   );
 }
+
+
