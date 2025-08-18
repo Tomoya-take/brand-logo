@@ -5,7 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { createRequestHandler } from "@remix-run/express";
 import webhooksRouter from "./webhooks.js";
-import * as build from "../build/index.js"; // ← ここを静的importに変更
+import * as build from "@remix-run/dev/server-build"; // ← ここを静的importに変更
 
 const app = express();
 
