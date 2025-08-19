@@ -1,20 +1,32 @@
-import express from "express";
-import { createRequestHandler } from "@remix-run/express";
-// @ts-ignore 型定義が無いので無視
-import * as remixBuild from "./build/server/index.js";
+// server.js
+require("dotenv").config();
+
+const express = require("express");
+const { createRequestHandler } = require("@remix-run/express");
+// Remix ビルドは CJS 形式なので require で読み込む
+const remixBuild = require("./build/server");
+
 const app = express();
+
 // 静的ファイル (public 配下)
 app.use(express.static("public"));
+
 // API endpoint の例
 app.get("/api/test", (req, res) => {
-    res.json({ ok: true, shop: process.env.SHOPIFY_APP_URL || "unknown" });
+  res.json({ ok: true, shop: process.env.SHOPIFY_APP_URL || "unknown" });
 });
+
 // Remix ハンドラ
-app.all("*", createRequestHandler({
+app.all(
+  "*",
+  createRequestHandler({
     build: remixBuild,
     mode: process.env.NODE_ENV,
-}));
+  })
+);
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-    console.log(`✅ Server running at http://localhost:${port}`);
+  console.log(`✅ Server running at http://localhost:${port}`);
 });
+
