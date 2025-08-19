@@ -1,0 +1,3 @@
+import{b as o,c as n,d as r,e as i,f as a,h as p}from"/build/_shared/chunk-4U2IBUSB.js";import{b as l}from"/build/_shared/chunk-4HXKWYDW.js";import{c as e}from"/build/_shared/chunk-Q3IECNXJ.js";var t=e(l(),1),m=()=>[{title:"Brand Logo App"}];function d(){return(0,t.jsxs)("html",{lang:"en",children:[(0,t.jsxs)("head",{children:[(0,t.jsx)(r,{}),(0,t.jsx)(n,{})]}),(0,t.jsxs)("body",{children:[(0,t.jsx)(o,{}),(0,t.jsx)(p,{}),(0,t.jsx)(i,{}),(0,t.jsx)(a,{}),(0,t.jsx)("script",{dangerouslySetInnerHTML:{__html:`
+              window.__SHOPIFY_API_KEY__ = "${process.env.SHOPIFY_API_KEY??""}";
+            `}})]})]})}export{d as default,m as meta};

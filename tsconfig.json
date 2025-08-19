@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -11,16 +11,23 @@
     "jsx": "react-jsx",
     "outDir": "build",
     "noImplicitAny": false,
-    "baseUrl": "./",
-    "allowImportingTsExtensions": false
+    "noEmitOnError": false,
+    "baseUrl": "app",
+    "paths": {
+      "~/*": ["*"]
+    }
   },
   "include": [
     "app/**/*",
     "server.ts",
     "webhooks.ts",
     "global.d.ts"
-  ]
+  ],
+"exclude": [
+  "node_modules"
+]
 }
+
 
 
 

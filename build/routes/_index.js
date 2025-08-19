@@ -1,4 +1,29 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+// app/routes/_index.tsx
+import { useEffect, useState } from "react";
+import { createApp } from "@shopify/app-bridge";
+import { authenticatedFetch } from "../utils/authenticatedFetch.js";
 export default function Index() {
-    return (_jsxs("div", { style: { padding: "2rem" }, children: [_jsx("h1", { children: "Brand Logo List App" }), _jsx("p", { children: "\u3053\u306E\u753B\u9762\u306F\u57CB\u3081\u8FBC\u307F\u30A2\u30D7\u30EA\u306E\u30C8\u30C3\u30D7\u30DA\u30FC\u30B8\u3067\u3059\u3002" }), _jsx("p", { children: "\u3053\u3053\u306B\u30A2\u30D7\u30EA\u306E\u7BA1\u7406\u753B\u9762UI\u3092\u4F5C\u308A\u8FBC\u3093\u3067\u3044\u3051\u307E\u3059\u3002" })] }));
+    const [shop, setShop] = useState(null);
+    useEffect(() => {
+        // ✅ App Bridge 初期化
+        const host = new URLSearchParams(window.location.search).get("host") || "";
+        const apiKey = window.__SHOPIFY_API_KEY__ || ""; // root.tsx で埋め込んでおく
+        const app = createApp({
+            apiKey,
+            host,
+            forceRedirect: true,
+        });
+        // ✅ 認証付き fetch
+        const fetchWithAuth = authenticatedFetch(app);
+        // API route 呼び出し
+        fetchWithAuth("/api/test")
+            .then((res) => res.json())
+            .then((data) => {
+            console.log("API response:", data);
+            setShop(data.shop || null);
+        })
+            .catch((err) => console.error("API error:", err));
+    }, []);
+    return (_jsxs("div", { style: { padding: "2rem" }, children: [_jsx("h1", { children: "Brand Logo List App" }), _jsxs("p", { children: ["This app can be operated from the customization screen of the online store. ", _jsx("br", {}), "You can add it by selecting ", _jsx("strong", { children: "Add Section \u2192 Apps \u2192 Brand Logo List App" }), "."] }), shop && (_jsxs("p", { style: { marginTop: "1rem", color: "green" }, children: ["\u2705 Connected to shop: ", _jsx("strong", { children: shop })] }))] }));
 }

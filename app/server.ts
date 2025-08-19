@@ -1,37 +1,31 @@
 import express from "express";
 import { createRequestHandler } from "@remix-run/express";
-import * as remixBuild from "@remix-run/node"; 
-import { shopify } from "app/shopify.server";
+import * as remixBuild from "../build/index.js";  
+import { shopify } from "./shopify.server.js";
 
 const app = express();
 
-// ✅ auth ミドルウェア修正版
-app.get("/api/auth", async (req, res) => {
-  return shopify.auth.begin()(req, res);
-});
 
-app.get("/api/auth/callback", async (req, res) => {
-  return shopify.auth.callback()(req, res);
-});
-
-// APIエンドポイント例
+// API endpoint
 app.get("/api/test", async (req, res) => {
-  res.json({ ok: true });
+  res.json({ ok: true, shop: process.env.SHOPIFY_APP_URL || "unknown" });
 });
 
 // Remix handler
 app.all(
   "*",
   createRequestHandler({
-    build: remixBuild as any,
+    build: remixBuild,
     mode: process.env.NODE_ENV,
   })
 );
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`✅ Server is running at http://localhost:${port}`);
+  console.log(`✅ Server running at http://localhost:${port}`);
 });
+
+
 
 
 
