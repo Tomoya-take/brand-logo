@@ -1,16 +1,20 @@
+// app/components/SafeAppBridgeProvider.tsx
 import React from "react";
 import { Provider as AppBridgeProvider } from "@shopify/app-bridge-react";
 
-interface Props {
+export default function SafeAppBridgeProvider({
+  children,
+  config,
+}: {
   children: React.ReactNode;
   config?: any;
-}
-
-export default function SafeAppBridgeProvider({ children, config }: Props) {
+}) {
   if (typeof window === "undefined") {
-    // SSR 中は AppBridge を初期化せず children だけ返す
+    // SSR のときは Provider を挟まない
     return <>{children}</>;
   }
 
   return <AppBridgeProvider config={config}>{children}</AppBridgeProvider>;
 }
+
+
