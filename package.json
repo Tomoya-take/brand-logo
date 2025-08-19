@@ -5,9 +5,8 @@
   "private": true,
   "author": "takeshita tomoya",
   "scripts": {
-    "dev": "remix dev",
     "build": "remix build",
-    "start": "remix-serve ./build/index.js"
+  "start": "node server.js"
   },
   "dependencies": {
     "@remix-run/dev": "^2.0.0",
