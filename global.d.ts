@@ -8,4 +8,7 @@ declare global {
 }
 
 declare module "@shopify/shopify-app-session-storage-sqlite";
+declare module "./build/server/index.js";
+
+
 

@@ -1,4 +1,5 @@
-import { shopifyApp } from "@shopify/shopify-app-remix";
+import 'dotenv/config';
+import { shopifyApp } from "@shopify/shopify-app-remix/server";
 import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlite";
 
 const sessionStorage = new SQLiteSessionStorage("./database.sqlite");

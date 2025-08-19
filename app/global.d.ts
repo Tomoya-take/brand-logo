@@ -7,6 +7,5 @@ declare global {
   }
 }
 
-declare module "@shopify/shopify-app-remix";
 declare module "@shopify/shopify-app-session-storage-sqlite";
 

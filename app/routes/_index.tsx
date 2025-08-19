@@ -1,4 +1,3 @@
-// app/routes/_index.tsx
 import React, { useEffect, useState } from "react";
 import { createApp } from "@shopify/app-bridge";
 import { authenticatedFetch } from "../utils/authenticatedFetch.js";
@@ -8,8 +7,16 @@ export default function Index() {
 
   useEffect(() => {
     // ✅ App Bridge 初期化
-    const host = new URLSearchParams(window.location.search).get("host") || "";
-    const apiKey = window.__SHOPIFY_API_KEY__ || ""; // root.tsx で埋め込んでおく
+    const host =
+      window.__SHOPIFY_HOST__ ||
+      new URLSearchParams(window.location.search).get("host") ||
+      "";
+    const apiKey = window.__SHOPIFY_API_KEY__ || "";
+
+    if (!host) {
+      console.error("❌ host が指定されていません");
+      return;
+    }
 
     const app = createApp({
       apiKey,
@@ -49,3 +56,4 @@ export default function Index() {
     </div>
   );
 }
+

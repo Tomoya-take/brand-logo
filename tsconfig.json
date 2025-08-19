@@ -10,23 +10,26 @@
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
     "outDir": "build",
-    "noImplicitAny": false,
+    "rootDir": ".",           // 入力は app/ に限定
     "noEmitOnError": false,
+    "noImplicitAny": false,
     "baseUrl": "app",
     "paths": {
       "~/*": ["*"]
     }
   },
   "include": [
-    "app/**/*",
+    "app",          // app 以下だけ
     "server.ts",
     "webhooks.ts",
     "global.d.ts"
   ],
-"exclude": [
-  "node_modules"
-]
+  "exclude": [
+    "node_modules",
+    "build"         // build はコンパイル対象から除外
+  ]
 }
+
 
 
 
