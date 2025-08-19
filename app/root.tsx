@@ -1,4 +1,3 @@
-// app/root.tsx
 import {
   Links,
   LiveReload,
@@ -9,7 +8,7 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import type { LinksFunction, MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
-import AppBridgeProvider from "./components/AppBridgeProvider";
+import SafeAppBridgeProvider from "./components/SafeAppBridgeProvider";
 
 // -------------------------
 // Meta 情報
@@ -35,6 +34,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function App() {
   const data = useLoaderData<typeof loader>();
 
+  const config = {
+    apiKey: data.SHOPIFY_API_KEY,
+    host: data.HOST,
+    forceRedirect: true,
+  };
+
   return (
     <html lang="en">
       <head>
@@ -42,10 +47,10 @@ export default function App() {
         <Links />
       </head>
       <body>
-        {/* ✅ AppBridgeProvider でラップ */}
-        <AppBridgeProvider>
+        {/* ✅ SSR中は SafeAppBridgeProvider が空、CSRで初期化される */}
+        <SafeAppBridgeProvider config={config}>
           <Outlet />
-        </AppBridgeProvider>
+        </SafeAppBridgeProvider>
 
         <ScrollRestoration />
         <Scripts />
@@ -64,6 +69,7 @@ export default function App() {
     </html>
   );
 }
+
 
 
 
