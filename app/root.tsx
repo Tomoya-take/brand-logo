@@ -1,4 +1,5 @@
-import type { LinksFunction } from "@remix-run/node";
+// app/root.tsx
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -6,25 +7,22 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
-
-// ✅ CommonJS モジュールなので default import から取り出す
-import AppBridgeReact from "@shopify/app-bridge-react";
-const { Provider } = AppBridgeReact;
 
 export const links: LinksFunction = () => {
   return [];
 };
 
-export default function App() {
-  // host パラメータを取得
-  const host =
-    new URLSearchParams(
-      typeof window !== "undefined" ? window.location.search : ""
-    ).get("host") || "";
+// Loaderで環境変数を注入
+export async function loader({ request }: LoaderFunctionArgs) {
+  return {
+    SHOPIFY_API_KEY: process.env.SHOPIFY_API_KEY,
+  };
+}
 
-  // パートナーダッシュボードの Client ID
-  const apiKey = "9e0bf26577909d0642a6fc4cf844d5bb";
+export default function App() {
+  const { SHOPIFY_API_KEY } = useLoaderData<typeof loader>();
 
   return (
     <html lang="en">
@@ -33,17 +31,16 @@ export default function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+
+        {/* ✅ window に APIキーを埋め込む */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__SHOPIFY_API_KEY__ = "${SHOPIFY_API_KEY}";`,
+          }}
+        />
       </head>
       <body>
-        {/* ✅ SSRガードを入れることで Render デプロイ時のエラーを防ぐ */}
-        {typeof window !== "undefined" ? (
-          <Provider config={{ apiKey, host }}>
-            <Outlet />
-          </Provider>
-        ) : (
-          <Outlet />
-        )}
-
+        <Outlet />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
@@ -51,6 +48,7 @@ export default function App() {
     </html>
   );
 }
+
 
 
 

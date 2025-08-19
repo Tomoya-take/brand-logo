@@ -1,2 +1,8 @@
 // global.d.ts
-declare module "../build/index.js";
+export {};
+
+declare global {
+  interface Window {
+    __SHOPIFY_API_KEY__?: string;
+  }
+}

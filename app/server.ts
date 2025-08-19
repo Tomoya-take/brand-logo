@@ -1,43 +1,36 @@
-import * as dotenv from "dotenv";
-dotenv.config();
-import express, { Request, Response, NextFunction } from "express";
-import path from "path";
-import { fileURLToPath } from "url";
+import express from "express";
 import { createRequestHandler } from "@remix-run/express";
-import webhooksRouter from "./webhooks.js";
-import * as build from "@remix-run/dev/server-build"; // ← ここを静的importに変更
+import * as remixBuild from "@remix-run/node"; // ✅ 修正済み
+import { shopify } from "./shopify.server";
 
 const app = express();
 
-// Webhook
-app.use(
-  "/webhooks",
-  express.raw({ type: "application/json" }),
-  (req: Request, res: Response, next: NextFunction) => {
-    (req as any).rawBody = req.body.toString("utf8");
-    next();
-  },
-  webhooksRouter
-);
+// ✅ auth ミドルウェア修正版
+app.get("/api/auth", async (req, res) => {
+  return shopify.auth.begin()(req, res);
+});
 
-// Health check
-app.get("/healthz", (req: Request, res: Response) => res.send("ok"));
+app.get("/api/auth/callback", async (req, res) => {
+  return shopify.auth.callback()(req, res);
+});
 
-// Static
-app.use(express.static("public"));
+// APIエンドポイント例
+app.get("/api/test", async (req, res) => {
+  res.json({ ok: true });
+});
 
 // Remix handler
 app.all(
   "*",
   createRequestHandler({
-    build,
+    build: remixBuild as any,
     mode: process.env.NODE_ENV,
   })
 );
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`✅ Server is running at http://localhost:${port}`);
 });
 
 
