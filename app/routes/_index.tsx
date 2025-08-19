@@ -1,28 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { createApp } from "@shopify/app-bridge";
-import { authenticatedFetch } from "../utils/authenticatedFetch.js";
+import { useAppBridge } from "@shopify/app-bridge-react";
 import { TitleBar } from "@shopify/app-bridge-react";
+import { authenticatedFetch } from "../utils/authenticatedFetch.js";
 
 export default function Index() {
   const [shop, setShop] = useState<string | null>(null);
+  const app = useAppBridge(); // ✅ Provider から AppBridge を取得
 
   useEffect(() => {
-    const host =
-      window.__SHOPIFY_HOST__ ||
-      new URLSearchParams(window.location.search).get("host") ||
-      "";
-    const apiKey = window.__SHOPIFY_API_KEY__ || "";
-
-    if (!host) {
-      console.error("❌ host が指定されていません");
-      return;
-    }
-
-    const app = createApp({
-      apiKey,
-      host,
-      forceRedirect: true,
-    });
+    if (!app) return;
 
     const fetchWithAuth = authenticatedFetch(app);
 
@@ -33,18 +19,19 @@ export default function Index() {
         setShop(data.shop || null);
       })
       .catch((err) => console.error("API error:", err));
-  }, []);
+  }, [app]);
 
   return (
     <div style={{ padding: "2rem" }}>
-      <TitleBar title="Brand Logo List App" /> {/* ✅ これを追加 */}
+      {/* ✅ AppBridge コンテキスト内で TitleBar を使える */}
+      <TitleBar title="Brand Logo List App" />
 
       <h1>Brand Logo List App</h1>
       <p>
         This app can be operated from the customization screen of the online
         store. <br />
-        You can add it by selecting <strong>Add Section → Apps → Brand Logo
-        List App</strong>.
+        You can add it by selecting{" "}
+        <strong>Add Section → Apps → Brand Logo List App</strong>.
       </p>
 
       {shop && (
@@ -55,5 +42,6 @@ export default function Index() {
     </div>
   );
 }
+
 
 
