@@ -5,7 +5,9 @@ import { authenticatedFetch } from "../utils/authenticatedFetch.js";
 
 export default function Index() {
   const [shop, setShop] = useState<string | null>(null);
-  const app = useAppBridge(); // ✅ Provider から AppBridge を取得
+
+  // ✅ SSRガード
+  const app = typeof window !== "undefined" ? useAppBridge() : null;
 
   useEffect(() => {
     if (!app) return;
@@ -23,8 +25,8 @@ export default function Index() {
 
   return (
     <div style={{ padding: "2rem" }}>
-      {/* ✅ AppBridge コンテキスト内で TitleBar を使える */}
-      <TitleBar title="Brand Logo List App" />
+      {/* ✅ CSR中のみTitleBarを描画 */}
+      {app && <TitleBar title="Brand Logo List App" />}
 
       <h1>Brand Logo List App</h1>
       <p>
@@ -42,6 +44,7 @@ export default function Index() {
     </div>
   );
 }
+
 
 
 
