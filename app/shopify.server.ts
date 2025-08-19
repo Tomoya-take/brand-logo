@@ -12,3 +12,4 @@ export const shopify = shopifyApp({
   sessionStorage,
 });
 
+export const { authenticate } = shopify;
