@@ -4,20 +4,19 @@ import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlit
 
 const sessionStorage = new SQLiteSessionStorage("./database.sqlite");
 
+const appUrl = process.env.SHOPIFY_APP_URL!;
+const hostName = new URL(appUrl).host; // ← https:// を除去して「brand-logo.onrender.com」だけを取得
+
 export const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY!,
   apiSecretKey: process.env.SHOPIFY_API_SECRET!,
   scopes: process.env.SCOPES?.split(",") || [],
-
-  // ✅ appUrl はフルURL
-  appUrl: process.env.SHOPIFY_APP_URL!,
-
-  // ✅ hostName は必ずプロトコルを除いた文字列
-  hostName: new URL(process.env.SHOPIFY_APP_URL!).host,
-
+  appUrl,
+  hostName,
   sessionStorage,
 });
 
 export const { authenticate } = shopify;
+
 
 
