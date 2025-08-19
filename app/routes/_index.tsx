@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { createApp } from "@shopify/app-bridge";
 import { authenticatedFetch } from "../utils/authenticatedFetch.js";
+import { TitleBar } from "@shopify/app-bridge-react";
 
 export default function Index() {
   const [shop, setShop] = useState<string | null>(null);
 
   useEffect(() => {
-    // ✅ App Bridge 初期化
     const host =
       window.__SHOPIFY_HOST__ ||
       new URLSearchParams(window.location.search).get("host") ||
@@ -24,10 +24,8 @@ export default function Index() {
       forceRedirect: true,
     });
 
-    // ✅ 認証付き fetch
     const fetchWithAuth = authenticatedFetch(app);
 
-    // API route 呼び出し
     fetchWithAuth("/api/test")
       .then((res) => res.json())
       .then((data) => {
@@ -39,6 +37,8 @@ export default function Index() {
 
   return (
     <div style={{ padding: "2rem" }}>
+      <TitleBar title="Brand Logo List App" /> {/* ✅ これを追加 */}
+
       <h1>Brand Logo List App</h1>
       <p>
         This app can be operated from the customization screen of the online
@@ -47,7 +47,6 @@ export default function Index() {
         List App</strong>.
       </p>
 
-      {/* APIテストの結果表示 */}
       {shop && (
         <p style={{ marginTop: "1rem", color: "green" }}>
           ✅ Connected to shop: <strong>{shop}</strong>
@@ -56,4 +55,5 @@ export default function Index() {
     </div>
   );
 }
+
 
