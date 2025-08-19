@@ -4,7 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const { createRequestHandler } = require("@remix-run/express");
 // Remix ビルドは CJS 形式なので require で読み込む
-const remixBuild = require("./build/server");
+const remixBuild = require("./build/index.js");
 
 const app = express();
 
