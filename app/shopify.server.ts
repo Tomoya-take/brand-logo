@@ -9,9 +9,11 @@ export const shopify = shopifyApp({
   apiSecretKey: process.env.SHOPIFY_API_SECRET!,
   scopes: process.env.SCOPES?.split(",") || [],
 
-  // 👇 Render 環境変数 SHOPIFY_APP_URL=https://brand-logo.onrender.com を利用
+  // ✅ appUrl はフルURL
   appUrl: process.env.SHOPIFY_APP_URL!,
-  hostName: process.env.SHOPIFY_APP_URL!.replace(/https?:\/\//, ""), // ← プロトコル除去したドメイン
+
+  // ✅ hostName は必ずプロトコルを除いた文字列
+  hostName: new URL(process.env.SHOPIFY_APP_URL!).host,
 
   sessionStorage,
 });
