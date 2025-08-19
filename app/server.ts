@@ -1,7 +1,7 @@
 import express from "express";
 import { createRequestHandler } from "@remix-run/express";
 import * as remixBuild from "@remix-run/node"; // ✅ 修正済み
-import { shopify } from "./shopify.server";
+import { shopify } from "./app/shopify.server"; 
 
 const app = express();
 
