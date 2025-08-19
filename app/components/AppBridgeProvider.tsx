@@ -1,24 +1,18 @@
-// app/components/AppBridgeProvider.tsx
 import React from "react";
-import { Provider } from "@shopify/app-bridge-react";
+import { AppBridgeProvider } from "@shopify/app-bridge-react";
 
-export default function AppBridgeProvider({ children }: { children: React.ReactNode }) {
-  const host =
-    window.__SHOPIFY_HOST__ ||
-    new URLSearchParams(window.location.search).get("host") ||
-    "";
-  const apiKey = window.__SHOPIFY_API_KEY__ || "";
+interface Props {
+  children: React.ReactNode;
+  config?: any;
+}
 
-  if (!host || !apiKey) {
-    console.error("❌ host / apiKey が不足しています");
+export default function SafeAppBridgeProvider({ children, config }: Props) {
+  if (typeof window === "undefined") {
+    // SSR中は何もせず、そのまま children を返す
     return <>{children}</>;
   }
 
-  const config = {
-    apiKey,
-    host,
-    forceRedirect: true,
-  };
-
-  return <Provider config={config}>{children}</Provider>;
+  return <AppBridgeProvider config={config}>{children}</AppBridgeProvider>;
 }
+
+
