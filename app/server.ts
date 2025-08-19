@@ -1,7 +1,7 @@
 import express from "express";
 import { createRequestHandler } from "@remix-run/express";
-import * as remixBuild from "@remix-run/node"; // ✅ 修正済み
-import { shopify } from "./app/shopify.server"; 
+import * as remixBuild from "@remix-run/node"; 
+import { shopify } from "app/shopify.server";
 
 const app = express();
 
@@ -32,7 +32,6 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`✅ Server is running at http://localhost:${port}`);
 });
-
 
 
 
