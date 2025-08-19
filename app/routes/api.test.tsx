@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import { authenticate } from "../shopify.server"; // ✅ これでOK
+import { authenticate } from "../shopify.server";
 
 export const loader = async ({ request }: { request: Request }) => {
   const { session } = await authenticate.admin(request);
