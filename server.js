@@ -3,13 +3,17 @@ require("dotenv").config();
 
 const express = require("express");
 const { createRequestHandler } = require("@remix-run/express");
-// Remix ビルドは CJS 形式なので require で読み込む
 const remixBuild = require("./build/index.js");
-
 const app = express();
 
-// 静的ファイル (public 配下)
-app.use(express.static("public"));
+// ✅ Remix が生成する静的アセット (/public/build/*) を配信
+app.use(
+  "/build",
+  express.static("public/build", { immutable: true, maxAge: "1y" })
+);
+
+// ✅ その他の public ファイルも配信
+app.use(express.static("public", { maxAge: "1h" }));
 
 // API endpoint の例
 app.get("/api/test", (req, res) => {
@@ -29,4 +33,5 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`✅ Server running at http://localhost:${port}`);
 });
+
 
