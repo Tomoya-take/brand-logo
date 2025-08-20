@@ -7,7 +7,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import type { LinksFunction, MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
+import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import SafeAppBridgeProvider from "./components/SafeAppBridgeProvider";
 
 // -------------------------
@@ -45,9 +45,13 @@ export default function App() {
       <head>
         <Meta />
         <Links />
+
+        {/* ✅ Shopify App Bridge CDN を追加 */}
+        <meta name="shopify-api-key" content={data.SHOPIFY_API_KEY} />
+        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
       <body>
-        {/* ✅ SSR中は SafeAppBridgeProvider が空、CSRで初期化される */}
+        {/* ✅ CSR中のみ SafeAppBridgeProvider で初期化 */}
         <SafeAppBridgeProvider config={config}>
           <Outlet />
         </SafeAppBridgeProvider>
@@ -69,6 +73,7 @@ export default function App() {
     </html>
   );
 }
+
 
 
 
