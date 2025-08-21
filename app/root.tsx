@@ -1,30 +1,22 @@
-import type {
-  MetaFunction,
-  LoaderFunctionArgs,
-  LinksFunction,
-} from "@remix-run/node";
 import {
   Links,
+  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-
+import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import SafeAppBridgeProvider from "./components/SafeAppBridgeProvider";
 
+import "@shopify/polaris/build/styles.css"; // ✅ esm → styles.css に修正
 import { AppProvider } from "@shopify/polaris";
-// ✅ JSON は require で読み込む
-const enTranslations = require("@shopify/polaris/locales/en.json");
-// ✅ CSS は links() 経由で読み込む
-import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
+import enTranslations from "@shopify/polaris/locales/en.json";
 
-export const meta: MetaFunction = () => [{ title: "Brand Logo App" }];
-
-export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: polarisStyles },
-];
+export const meta: MetaFunction = () => {
+  return [{ title: "Brand Logo App" }];
+};
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -48,20 +40,31 @@ export default function App() {
       <head>
         <Meta />
         <Links />
+        <meta name="shopify-api-key" content={data.SHOPIFY_API_KEY} />
+        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
       <body>
-        <AppProvider i18n={enTranslations}>
-          <SafeAppBridgeProvider config={config}>
+        <SafeAppBridgeProvider config={config}>
+          <AppProvider i18n={enTranslations}>
             <Outlet />
-          </SafeAppBridgeProvider>
-        </AppProvider>
-
+          </AppProvider>
+        </SafeAppBridgeProvider>
         <ScrollRestoration />
         <Scripts />
+        <LiveReload />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.__SHOPIFY_API_KEY__ = "${data.SHOPIFY_API_KEY}";
+              window.__SHOPIFY_HOST__ = "${data.HOST}";
+            `,
+          }}
+        />
       </body>
     </html>
   );
 }
+
 
 
 
