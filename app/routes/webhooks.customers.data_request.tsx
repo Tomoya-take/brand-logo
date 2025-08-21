@@ -1,7 +1,7 @@
 // app/routes/webhooks/customers.data_request.ts
 import type { ActionFunctionArgs } from "@remix-run/node";
 import crypto from "crypto";
-import { verifyHmac } from "~/utils/verifyHmac";
+import { verifyHmac } from "../utils/verifyHmac";
 
 export async function action({ request }: ActionFunctionArgs) {
   const rawBody = Buffer.from(await request.arrayBuffer());
@@ -17,3 +17,4 @@ export async function action({ request }: ActionFunctionArgs) {
 
   return new Response("OK", { status: 200 });
 }
+
