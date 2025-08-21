@@ -7,13 +7,14 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
+import type { MetaFunction, LoaderFunctionArgs, LinksFunction } from "@remix-run/node";
 import SafeAppBridgeProvider from "./components/SafeAppBridgeProvider";
-// app/root.tsx
-import "@shopify/polaris/build/esm/styles.css";
+
 import { AppProvider } from "@shopify/polaris";
 import enTranslations from "@shopify/polaris/locales/en.json";
 
+// ✅ Polaris の CSS を link として取り込む
+import polarisStyles from "@shopify/polaris/build/esm/styles.css";
 
 // -------------------------
 // Meta 情報
@@ -21,6 +22,13 @@ import enTranslations from "@shopify/polaris/locales/en.json";
 export const meta: MetaFunction = () => {
   return [{ title: "Brand Logo App" }];
 };
+
+// -------------------------
+// CSS links
+// -------------------------
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: polarisStyles },
+];
 
 // -------------------------
 // Loader: API KEY と host を渡す
@@ -56,10 +64,12 @@ export default function App() {
         <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
       <body>
-        {/* ✅ CSR中のみ SafeAppBridgeProvider で初期化 */}
-        <SafeAppBridgeProvider config={config}>
-          <Outlet />
-        </SafeAppBridgeProvider>
+        {/* Polaris のラップ */}
+        <AppProvider i18n={enTranslations}>
+          <SafeAppBridgeProvider config={config}>
+            <Outlet />
+          </SafeAppBridgeProvider>
+        </AppProvider>
 
         <ScrollRestoration />
         <Scripts />
@@ -78,9 +88,6 @@ export default function App() {
     </html>
   );
 }
-
-
-
 
 
 
