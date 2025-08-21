@@ -1,47 +1,97 @@
 import React, { useEffect, useState } from "react";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { TitleBar } from "@shopify/app-bridge-react";
-import { authenticatedFetch } from "../utils/authenticatedFetch.js";
+import {
+  Page,
+  Layout,
+  Card,
+  Button,
+  Thumbnail,
+} from "@shopify/polaris";
 
 export default function Index() {
-  const [shop, setShop] = useState<string | null>(null);
-
-  // ✅ SSRガード
+  const [logos, setLogos] = useState<string[]>([]);
   const app = typeof window !== "undefined" ? useAppBridge() : null;
 
+  // 初期読み込み (Metafieldから取得)
   useEffect(() => {
-    if (!app) return;
-
-    const fetchWithAuth = authenticatedFetch(app);
-
-    fetchWithAuth("/api/test")
+    fetch("/api/load-logos")
       .then((res) => res.json())
-      .then((data) => {
-        console.log("API response:", data);
-        setShop(data.shop || null);
-      })
-      .catch((err) => console.error("API error:", err));
-  }, [app]);
+      .then((data) => setLogos(data || []))
+      .catch((err) => console.error("Load logos error:", err));
+  }, []);
+
+  // アップロード処理
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload-logo", { method: "POST", body: formData });
+      const data = await res.json();
+
+      const updated = [...logos, data.url];
+      setLogos(updated);
+
+      await fetch("/api/save-logos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+    } catch (err) {
+      console.error("Upload error:", err);
+    }
+  };
+
+  // 削除処理
+  const handleDelete = async (url: string) => {
+    const updated = logos.filter((l) => l !== url);
+    setLogos(updated);
+
+    try {
+      await fetch("/api/save-logos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updated),
+      });
+    } catch (err) {
+      console.error("Delete error:", err);
+    }
+  };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      {/* ✅ CSR中のみTitleBarを描画 */}
+    <Page title="Brand Logo List 管理">
       {app && <TitleBar title="Brand Logo List App" />}
+      <Layout>
+        <Layout.Section>
+          <Card sectioned>
+            <input type="file" onChange={handleUpload} />
+          </Card>
 
-      <h1>Brand Logo List App</h1>
-      <p>
-        This app can be operated from the customization screen of the online
-        store. <br />
-        You can add it by selecting{" "}
-        <strong>Add Section → Apps → Brand Logo List App</strong>.
-      </p>
-
-      {shop && (
-        <p style={{ marginTop: "1rem", color: "green" }}>
-          ✅ Connected to shop: <strong>{shop}</strong>
-        </p>
-      )}
-    </div>
+          <Card title="登録済みロゴ">
+            {logos.length === 0 && <p>まだロゴがありません</p>}
+            {logos.map((url, idx) => (
+              <div
+                key={idx}
+                style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
+              >
+                <Thumbnail source={url} alt={`Logo ${idx + 1}`} size="small" />
+                <Button
+                  destructive
+                  onClick={() => handleDelete(url)}
+                  style={{ marginLeft: "10px" }}
+                >
+                  削除
+                </Button>
+              </div>
+            ))}
+          </Card>
+        </Layout.Section>
+      </Layout>
+    </Page>
   );
 }
 
