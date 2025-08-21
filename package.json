@@ -4,7 +4,6 @@
   "license": "UNLICENSED",
   "private": true,
   "author": "takeshita tomoya",
-  "type": "module", 
   "scripts": {
     "build": "remix build",
     "start": "node server.js"
