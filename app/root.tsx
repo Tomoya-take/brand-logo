@@ -10,14 +10,16 @@ import {
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import SafeAppBridgeProvider from "./components/SafeAppBridgeProvider";
 
-import "@shopify/polaris/build/styles.css"; // ✅ esm → styles.css に修正
-import { AppProvider } from "@shopify/polaris";
-import enTranslations from "@shopify/polaris/locales/en.json";
-
+// -------------------------
+// Meta 情報
+// -------------------------
 export const meta: MetaFunction = () => {
   return [{ title: "Brand Logo App" }];
 };
 
+// -------------------------
+// Loader: API KEY と host を渡す
+// -------------------------
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   return {
@@ -26,6 +28,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
   };
 }
 
+// -------------------------
+// App コンポーネント
+// -------------------------
 export default function App() {
   const data = useLoaderData<typeof loader>();
 
@@ -40,18 +45,22 @@ export default function App() {
       <head>
         <Meta />
         <Links />
+
+        {/* ✅ Shopify App Bridge CDN を追加 */}
         <meta name="shopify-api-key" content={data.SHOPIFY_API_KEY} />
         <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
       <body>
+        {/* ✅ CSR中のみ SafeAppBridgeProvider で初期化 */}
         <SafeAppBridgeProvider config={config}>
-          <AppProvider i18n={enTranslations}>
-            <Outlet />
-          </AppProvider>
+          <Outlet />
         </SafeAppBridgeProvider>
+
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+
+        {/* window に API KEY と host を埋め込む */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -64,6 +73,7 @@ export default function App() {
     </html>
   );
 }
+
 
 
 
