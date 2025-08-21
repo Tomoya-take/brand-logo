@@ -9,6 +9,11 @@ import {
 } from "@remix-run/react";
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import SafeAppBridgeProvider from "./components/SafeAppBridgeProvider";
+// app/root.tsx
+import "@shopify/polaris/build/esm/styles.css";
+import { AppProvider } from "@shopify/polaris";
+import enTranslations from "@shopify/polaris/locales/en.json";
+
 
 // -------------------------
 // Meta 情報
