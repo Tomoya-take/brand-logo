@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
+    "target": "ES2019",                  // Node 20 なら ES2019 で十分
+    "module": "CommonJS",                // CommonJS にする
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -9,8 +9,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-jsx",
-    "outDir": "build",
-    "rootDir": ".",           // 入力は app/ に限定
+    "outDir": ".",                       // build ではなくカレントに出力
+    "rootDir": ".", 
     "noEmitOnError": false,
     "noImplicitAny": false,
     "baseUrl": "app",
@@ -19,16 +19,17 @@
     }
   },
   "include": [
-    "app",          // app 以下だけ
+    "app",
     "server.ts",
     "webhooks.ts",
     "global.d.ts"
   ],
   "exclude": [
     "node_modules",
-    "build"         // build はコンパイル対象から除外
+    "build"
   ]
 }
+
 
 
 
