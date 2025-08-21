@@ -8,6 +8,7 @@ import * as remixBuild from "./build/index.js";
 import { shopify } from "./app/shopify.server"; // 必要なら利用
 
 import webhookRouter from "./app/webhooks";
+import bodyParser from "body-parser";
 
 const app = express();
 
