@@ -1,38 +1,31 @@
+import type {
+  MetaFunction,
+  LoaderFunctionArgs,
+  LinksFunction,
+} from "@remix-run/node";
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import type { MetaFunction, LoaderFunctionArgs, LinksFunction } from "@remix-run/node";
+
 import SafeAppBridgeProvider from "./components/SafeAppBridgeProvider";
 
 import { AppProvider } from "@shopify/polaris";
-import enTranslations from "@shopify/polaris/locales/en.json";
+// ✅ JSON は require で読み込む
+const enTranslations = require("@shopify/polaris/locales/en.json");
+// ✅ CSS は links() 経由で読み込む
+import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 
-// ✅ Polaris の CSS を link として取り込む
-import polarisStyles from "@shopify/polaris/build/esm/styles.css";
+export const meta: MetaFunction = () => [{ title: "Brand Logo App" }];
 
-// -------------------------
-// Meta 情報
-// -------------------------
-export const meta: MetaFunction = () => {
-  return [{ title: "Brand Logo App" }];
-};
-
-// -------------------------
-// CSS links
-// -------------------------
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: polarisStyles },
 ];
 
-// -------------------------
-// Loader: API KEY と host を渡す
-// -------------------------
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   return {
@@ -41,9 +34,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   };
 }
 
-// -------------------------
-// App コンポーネント
-// -------------------------
 export default function App() {
   const data = useLoaderData<typeof loader>();
 
@@ -58,13 +48,8 @@ export default function App() {
       <head>
         <Meta />
         <Links />
-
-        {/* ✅ Shopify App Bridge CDN を追加 */}
-        <meta name="shopify-api-key" content={data.SHOPIFY_API_KEY} />
-        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
       <body>
-        {/* Polaris のラップ */}
         <AppProvider i18n={enTranslations}>
           <SafeAppBridgeProvider config={config}>
             <Outlet />
@@ -73,21 +58,11 @@ export default function App() {
 
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
-
-        {/* window に API KEY と host を埋め込む */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.__SHOPIFY_API_KEY__ = "${data.SHOPIFY_API_KEY}";
-              window.__SHOPIFY_HOST__ = "${data.HOST}";
-            `,
-          }}
-        />
       </body>
     </html>
   );
 }
+
 
 
 
