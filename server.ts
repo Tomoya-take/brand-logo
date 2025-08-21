@@ -43,6 +43,12 @@ app.all(
   })
 );
 
+app.post("/webhooks/shop/redact", (req, res) => {
+  console.log("✅ direct /webhooks/shop/redact HIT");
+  res.send("OK");
+});
+
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`✅ Server running at http://localhost:${port}`);
