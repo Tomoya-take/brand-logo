@@ -7,9 +7,6 @@ import * as remixBuild from "./build/index.js";
 
 import { shopify } from "./app/shopify.server"; // 必要なら利用
 
-import webhookRouter from "./app/webhooks";
-import bodyParser from "body-parser";
-
 const app = express();
 
 // 静的ファイル (public 配下)
@@ -26,8 +23,9 @@ app.get("/api/test", (req, res) => {
 
 // -----------------------------
 // ✅ Webhook 用のルート
-// raw body が必要なので専用の bodyParser を適用
+import webhookRouter from "./app/webhooks";
 import bodyParser from "body-parser";
+console.log("✅ webhookRouter loaded:", typeof webhookRouter);
 app.use(
   "/webhooks",
   bodyParser.raw({ type: "application/json" }),
