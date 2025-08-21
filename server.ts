@@ -15,6 +15,10 @@ const app = express();
 // 静的ファイル (public 配下)
 app.use(express.static("public"));
 
+app.get("/__test", (req, res) => {
+  res.send("✅ Express is working");
+});
+
 // API endpoint の例
 app.get("/api/test", (req, res) => {
   res.json({ ok: true, shop: process.env.SHOPIFY_APP_URL || "unknown" });
