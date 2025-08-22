@@ -19,4 +19,7 @@ export const shopify = shopifyApp({
 export const { authenticate } = shopify;
 
 
+export default shopify;
+
+
 
