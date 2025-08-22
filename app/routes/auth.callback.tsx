@@ -1,9 +1,15 @@
 // app/routes/auth.callback.tsx
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs, redirect } from "@remix-run/node";
 import shopify from "../shopify.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  // コールバック用の処理を必ず使う
-  return shopify.authenticate.callback(request);
+  const { session } = await shopify.authenticate.admin(request);
+
+  if (!session) {
+    throw new Response("Unauthorized", { status: 401 });
+  }
+
+  // 認証成功後のリダイレクト先
+  return redirect("/");
 }
 
