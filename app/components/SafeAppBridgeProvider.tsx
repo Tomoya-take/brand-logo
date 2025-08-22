@@ -1,41 +1,37 @@
 // app/components/SafeAppBridgeProvider.tsx
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import { Provider as AppBridgeProvider } from "@shopify/app-bridge-react";
 
 export default function SafeAppBridgeProvider({
   children,
+  apiKey,
   config,
 }: {
   children: React.ReactNode;
+  apiKey: string;
   config?: any;
 }) {
-  const [finalConfig, setFinalConfig] = useState(config);
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    // ✅ host が渡っていない場合、URL から再取得
-    if (!config?.host) {
-      const params = new URLSearchParams(window.location.search);
-      const hostFromUrl = params.get("host");
-      if (hostFromUrl) {
-        setFinalConfig({ ...config, host: hostFromUrl });
-      }
-    }
-
-    setIsReady(true);
-  }, [config]);
-
   if (typeof window === "undefined") {
-    // SSR のときは Provider を挟まない
     return <>{children}</>;
   }
 
-  return isReady ? (
-    <AppBridgeProvider config={finalConfig}>{children}</AppBridgeProvider>
-  ) : null;
+  // host を確実に取得
+  const host = new URLSearchParams(window.location.search).get("host");
+
+  // 必要最低限の config を常に渡す
+  const finalConfig = useMemo(
+    () => ({
+      apiKey,
+      host,
+      forceRedirect: true,
+      ...config,
+    }),
+    [apiKey, host, config]
+  );
+
+  return <AppBridgeProvider config={finalConfig}>{children}</AppBridgeProvider>;
 }
+
 
 
 
