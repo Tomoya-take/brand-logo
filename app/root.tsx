@@ -10,38 +10,43 @@ import {
 } from "@remix-run/react";
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import SafeAppBridgeProvider from "./components/SafeAppBridgeProvider";
 
-// ✅ 公式の AppProvider（App Bridge/host 周りを面倒見てくれる）
-import { AppProvider as ShopifyAppProvider } from "@shopify/shopify-app-remix/react";
-
-// Polaris（任意で併用OK）
-import { AppProvider as PolarisProvider } from "@shopify/polaris";
+// Polaris
+import { AppProvider } from "@shopify/polaris";
 import * as en from "@shopify/polaris/locales/en.json";
 
 export const meta: MetaFunction = () => [{ title: "Brand Logo App" }];
 
-export async function loader({}: LoaderFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
   return json({
-    apiKey: process.env.SHOPIFY_API_KEY || "",
+    SHOPIFY_API_KEY: process.env.SHOPIFY_API_KEY || "",
+    HOST: url.searchParams.get("host") || "",
   });
 }
 
 export default function App() {
-  const { apiKey } = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
 
   return (
     <html lang="en">
       <head>
         <Meta />
         <Links />
+        {/* App Bridge のために key を埋め込む（CDNスクリプトでも可） */}
+        <meta name="shopify-api-key" content={data.SHOPIFY_API_KEY} />
+        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
       <body>
-        {/* ✅ App Bridge 初期化と host ハンドリングはこれに任せる */}
-        <ShopifyAppProvider apiKey={apiKey} isEmbeddedApp>
-          <PolarisProvider i18n={en.default}>
+        <AppProvider i18n={en.default}>
+          <SafeAppBridgeProvider
+            apiKey={data.SHOPIFY_API_KEY}
+            config={{ host: data.HOST, forceRedirect: true }}
+          >
             <Outlet />
-          </PolarisProvider>
-        </ShopifyAppProvider>
+          </SafeAppBridgeProvider>
+        </AppProvider>
 
         <ScrollRestoration />
         <Scripts />
@@ -50,6 +55,7 @@ export default function App() {
     </html>
   );
 }
+
 
 
 
