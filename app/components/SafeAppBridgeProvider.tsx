@@ -9,29 +9,35 @@ export default function SafeAppBridgeProvider({
   children: React.ReactNode;
   config?: any;
 }) {
+  const [finalConfig, setFinalConfig] = useState(config);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // ✅ CDNからロードされたappBridgeスクリプトがあるか確認
-    if ((window as any).appBridge) {
-      console.log("✅ Using CDN App Bridge");
-    } else {
-      console.log("⚠️ Falling back to npm app-bridge");
+    // ✅ host が渡っていない場合、URL から再取得
+    if (!config?.host) {
+      const params = new URLSearchParams(window.location.search);
+      const hostFromUrl = params.get("host");
+      if (hostFromUrl) {
+        setFinalConfig({ ...config, host: hostFromUrl });
+      }
     }
 
     setIsReady(true);
-  }, []);
+  }, [config]);
 
   if (typeof window === "undefined") {
     // SSR のときは Provider を挟まない
     return <>{children}</>;
   }
 
-  // CSR開始後にProviderを有効化
-  return isReady ? <AppBridgeProvider config={config}>{children}</AppBridgeProvider> : null;
+  return isReady ? (
+    <AppBridgeProvider config={finalConfig}>{children}</AppBridgeProvider>
+  ) : null;
 }
+
+
 
 
 
