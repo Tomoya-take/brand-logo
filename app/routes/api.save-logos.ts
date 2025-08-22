@@ -1,18 +1,24 @@
-// app/routes/api.save-logos.ts
+// app/routes/api.save-logos.tsx
 import type { ActionFunctionArgs } from "@remix-run/node";
-import { authenticate } from "~/shopify.server";
+import shopify from "../shopify.server";
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { admin } = await authenticate.admin(request);
-  const body = await request.json(); // { logos: ["url1","url2",...] }
+  const { session } = await shopify.authenticate.admin(request);
+  const body = await request.json();
 
-  const metafield = await admin.rest.Metafield.create({
-    owner_resource: "shop",
+  // JSON文字列として保存
+  const metafield = new session.api.rest.Metafield({
+    session,
     namespace: "brand_logo",
     key: "logos",
     type: "json",
     value: JSON.stringify(body),
+    owner_resource: "shop",
   });
 
-  return new Response(JSON.stringify(metafield), { status: 200 });
+  await metafield.save({ update: true });
+
+  return Response.json({ success: true });
 }
+
+
