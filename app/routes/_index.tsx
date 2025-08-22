@@ -7,17 +7,26 @@ import { authenticate } from "~/shopify.server";
 // Polaris
 import { Page, Layout, Card, BlockStack, Text, Button, InlineStack } from "@shopify/polaris";
 
-// App Bridge
-import { useAppBridge } from "@shopify/app-bridge-react";
-import { Redirect } from "@shopify/app-bridge/actions";
+// ❌ これらは削除：useAppBridge / Redirect
+// import { useAppBridge } from "@shopify/app-bridge-react";
+// import { Redirect } from "@shopify/app-bridge/actions";
 
-// -------------------- Loader: shop 表示用 --------------------
+// --- Loader ---
 export async function loader({ request }: LoaderFunctionArgs) {
   const { session } = await authenticate.admin(request);
-  return json({ shop: session?.shop ?? null });
+  const shop = session?.shop ?? null;
+
+  // Admin のテーマエディタURLをサーバ側で作る（SSR安全）
+  const slug =
+    shop && shop.endsWith(".myshopify.com") ? shop.replace(".myshopify.com", "") : null;
+  const adminEditorUrl = slug
+    ? `https://admin.shopify.com/store/${slug}/themes/current/editor?context=apps`
+    : null;
+
+  return json({ shop, adminEditorUrl });
 }
 
-// -------------------- Action: 画像アップロード（Shopify Files） --------------------
+// --- 画像アップロード (そのまま)
 export async function action({ request }: ActionFunctionArgs) {
   const { session } = await authenticate.admin(request);
   if (!session) throw new Response("Unauthorized", { status: 401 });
@@ -26,8 +35,8 @@ export async function action({ request }: ActionFunctionArgs) {
   const file = form.get("file") as File | null;
   if (!file) return redirect("/?uploaded=0");
 
-  // --- 1) S3に一時アップロードURLを発行 ---
-  const client = new (await import("@shopify/shopify-api")).shopifyApi({
+  const { shopifyApi } = await import("@shopify/shopify-api");
+  const client = shopifyApi({
     apiKey: process.env.SHOPIFY_API_KEY!,
     apiSecretKey: process.env.SHOPIFY_API_SECRET!,
     apiVersion: "2024-07",
@@ -38,15 +47,10 @@ export async function action({ request }: ActionFunctionArgs) {
       query: `
         mutation stagedUploadsCreate($input: [StagedUploadInput!]!) {
           stagedUploadsCreate(input: $input) {
-            stagedTargets {
-              url
-              resourceUrl
-              parameters { name value }
-            }
+            stagedTargets { url resourceUrl parameters { name value } }
             userErrors { field message }
           }
-        }
-      `,
+        }`,
       variables: {
         input: [{
           resource: "FILE",
@@ -67,25 +71,17 @@ export async function action({ request }: ActionFunctionArgs) {
   const s3res = await fetch(target.url, { method: "POST", body: formData });
   if (!s3res.ok) return redirect("/?uploaded=0");
 
-  // --- 2) Shopify Files に登録 ---
   const created = await client.query({
     data: {
       query: `
         mutation fileCreate($files: [FileCreateInput!]!) {
           fileCreate(files: $files) {
-            files { __typename
-              ... on MediaImage { id image { url } }
-            }
+            files { __typename ... on MediaImage { id image { url } } }
             userErrors { field message }
           }
-        }
-      `,
+        }`,
       variables: {
-        files: [{
-          originalSource: target.resourceUrl,
-          contentType: "IMAGE",
-          alt: file.name,
-        }],
+        files: [{ originalSource: target.resourceUrl, contentType: "IMAGE", alt: file.name }],
       },
     },
   });
@@ -94,20 +90,10 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(ok ? "/?uploaded=1" : "/?uploaded=0");
 }
 
-// -------------------- UI --------------------
+// --- UI ---
 export default function Index() {
-  const { shop } = useLoaderData<typeof loader>();
-  const app = useAppBridge();
+  const { adminEditorUrl } = useLoaderData<typeof loader>();
   const nav = useNavigation();
-
-  const openThemeEditor = () => {
-    const redirect = Redirect.create(app);
-    // テーマエディタ（アプリ用コンテキストで開く）
-    redirect.dispatch(
-      Redirect.Action.ADMIN_PATH,
-      "/themes/current/editor?context=apps"
-    );
-  };
 
   return (
     <Page title="Brand Logo List 管理">
@@ -117,14 +103,11 @@ export default function Index() {
             <BlockStack gap="400">
               <Text as="p">このアプリは「オンラインストア → テーマをカスタマイズ」から利用します。</Text>
               <InlineStack gap="300">
-                <Button variant="primary" onClick={openThemeEditor}>
-                  カスタマイズ画面を開く
-                </Button>
-                <a
-                  href="https://help.shopify.com/ja/manual/online-store/themes/customizing-themes"
-                  target="_blank" rel="noreferrer"
-                >
-                  <Button>使い方（ヘルプ）</Button>
+                {/* ✅ AppBridgeを使わず、_top でAdminに遷移 */}
+                <a href={adminEditorUrl ?? "#"} target="_top" rel="noreferrer">
+                  <Button variant="primary" disabled={!adminEditorUrl}>
+                    カスタマイズ画面を開く
+                  </Button>
                 </a>
               </InlineStack>
             </BlockStack>
@@ -143,9 +126,7 @@ export default function Index() {
                   </Button>
                 </div>
               </Form>
-              <Text as="p" tone="subdued">
-                ※ ここでアップロードした画像は Shopify の「コンテンツ → ファイル」に保存されます。
-              </Text>
+              <Text as="p" tone="subdued">※ アップロードした画像は「コンテンツ → ファイル」に保存されます。</Text>
             </BlockStack>
           </Card>
         </Layout.Section>
@@ -153,6 +134,7 @@ export default function Index() {
     </Page>
   );
 }
+
 
 
 
