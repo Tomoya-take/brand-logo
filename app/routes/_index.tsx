@@ -9,7 +9,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { session } = await authenticate.admin(request);
   const shop = session?.shop ?? null;
   const slug = shop?.endsWith(".myshopify.com") ? shop.replace(".myshopify.com", "") : null;
-  const editorUrl = slug ? `https://admin.shopify.com/store/${slug}/themes/current/editor` : null; // ← トップを開く
+  const editorUrl = slug ? `https://admin.shopify.com/store/${slug}/themes/current/editor` : null;
   return json({ editorUrl });
 }
 
@@ -40,17 +40,18 @@ export default function Index() {
                   <li>セクション設定でロゴ画像の追加・リンク設定を行う（必要に応じて）。</li>
                   <li>右上の「保存」をクリックして公開。</li>
                 </ol>
-                <br>
+
+                {/* spacer */}
+                <div style={{ height: 16 }} />
 
                 <Text as="h3" variant="headingMd">How to use (English)</Text>
                 <ol>
                   <li>Go to <i>Online Store → Themes</i> and click <b>Customize</b>.</li>
-                  <li>In the left sidebar, click <b>Add section</b> → <b>Apps</b> → add <b>Brand Logo List</b>.*Multiple sections and blocks can be added.</li>
+                  <li>In the left sidebar, click <b>Add section</b> → <b>Apps</b> → add <b>Brand Logo List</b>. *Multiple sections and blocks can be added.</li>
                   <li>Configure the section: upload logos, reorder, and set links as needed.</li>
                   <li>Click <b>Save</b> in the top-right to publish the changes.</li>
                   <li>If editing a draft theme, use <b>Preview</b> first, then set it as the live theme.</li>
                 </ol>
-
               </BlockStack>
             </BlockStack>
           </Card>
@@ -59,7 +60,7 @@ export default function Index() {
 
       {/* ここで指定のCSSを適用 */}
       <style>{`
-        /* button */
+        /* button (汎用) */
         button {
           color: #fff;
           background: #303030;
@@ -68,9 +69,17 @@ export default function Index() {
           cursor: pointer;
           transition: background-color .2s ease;
         }
-        button:hover {
-          background: #000;
+        button:hover { background: #000; }
+
+        /* Polaris Button を確実に上書き */
+        .Polaris-Button {
+          background: #303030;
+          border: 1px solid #303030;
+          border-radius: 8px;
+          transition: background-color .2s ease;
         }
+        .Polaris-Button:hover { background: #000; }
+        .Polaris-Button span { color: #fff; }
 
         /* Polaris-Page */
         .Polaris-Page {
@@ -96,6 +105,7 @@ export default function Index() {
     </Page>
   );
 }
+
 
 
 
