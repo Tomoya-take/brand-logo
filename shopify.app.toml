@@ -16,7 +16,7 @@ api_version = "2025-07"
 scopes = ""
 
 [auth]
-redirect_urls = [ "https://brand-logo.onrender.com/api/auth/callback" ]
+redirect_urls = [ "https://brand-logo.onrender.com/auth/callback" ]
 
 [pos]
 embedded = false
