@@ -1,19 +1,22 @@
-// app/routes/api.load-logos.ts
+// app/routes/api.load-logos.tsx
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { authenticate } from "~/shopify.server";
+import shopify from "../shopify.server"; // あなたの shopify.server.ts のパスに合わせる
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { admin } = await authenticate.admin(request);
+  const { session } = await shopify.authenticate.admin(request);
 
-  const result = await admin.rest.Metafield.all({
+  const metafield = await session.api.rest.Metafield.all({
+    session,
     namespace: "brand_logo",
     key: "logos",
-    owner_resource: "shop",
   });
 
-  if (!result.data[0]) {
-    return new Response(JSON.stringify([]), { status: 200 });
+  if (metafield.data.length > 0) {
+    const value = metafield.data[0].value;
+    return Response.json(JSON.parse(value));
   }
 
-  return new Response(result.data[0].value, { status: 200 });
+  return Response.json([]); // デフォルトは空配列
 }
+
+
