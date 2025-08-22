@@ -30,6 +30,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return {
     SHOPIFY_API_KEY: process.env.SHOPIFY_API_KEY || "",
     HOST: url.searchParams.get("host") || "",
+    SHOP: url.searchParams.get("shop") || "",
   };
 }
 
@@ -42,6 +43,7 @@ export default function App() {
   const config = {
     apiKey: data.SHOPIFY_API_KEY,
     host: data.HOST,
+    shop: data.SHOP, 
     forceRedirect: true,
   };
 
