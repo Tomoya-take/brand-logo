@@ -34,33 +34,69 @@ export default function Index() {
 
               <BlockStack gap="300">
                 <Text as="h3" variant="headingMd">使い方（日本語）</Text>
-                <ol style={{ margin: 0, paddingLeft: 18 }}>
+                <ol>
                   <li>オンラインストア → テーマ →「カスタマイズ」をクリック。</li>
-                  <li>左サイドバーで「セクションを追加」→「アプリ」→「Brand Logo List」を追加。</li>
+                  <li>左サイドバーで「セクションを追加」→「アプリ」→「Brand Logo List」を追加。※セクション、ブロックは複数個追加可能。</li>
                   <li>セクション設定でロゴ画像の追加・リンク設定を行う（必要に応じて）。</li>
                   <li>右上の「保存」をクリックして公開。</li>
                 </ol>
+                <br>
 
                 <Text as="h3" variant="headingMd">How to use (English)</Text>
-                <ol style={{ margin: 0, paddingLeft: 18 }}>
+                <ol>
                   <li>Go to <i>Online Store → Themes</i> and click <b>Customize</b>.</li>
-                  <li>In the left sidebar, click <b>Add section</b> → <b>Apps</b> → add <b>Brand Logo List</b>.</li>
+                  <li>In the left sidebar, click <b>Add section</b> → <b>Apps</b> → add <b>Brand Logo List</b>.*Multiple sections and blocks can be added.</li>
                   <li>Configure the section: upload logos, reorder, and set links as needed.</li>
                   <li>Click <b>Save</b> in the top-right to publish the changes.</li>
                   <li>If editing a draft theme, use <b>Preview</b> first, then set it as the live theme.</li>
                 </ol>
 
-                <Text as="p" tone="subdued">
-                  * This admin page is only for guidance. All configuration happens in the Theme Editor.
-                </Text>
               </BlockStack>
             </BlockStack>
           </Card>
         </Layout.Section>
       </Layout>
+
+      {/* ここで指定のCSSを適用 */}
+      <style>{`
+        /* button */
+        button {
+          color: #fff;
+          background: #303030;
+          border-radius: 8px;
+          border: 1px solid #303030;
+          cursor: pointer;
+          transition: background-color .2s ease;
+        }
+        button:hover {
+          background: #000;
+        }
+
+        /* Polaris-Page */
+        .Polaris-Page {
+          padding: 0 38px;
+          margin-bottom: 38px;
+        }
+
+        /* Polaris-BlockStack */
+        .Polaris-BlockStack {
+          background: #ffffff;
+          padding: 19px;
+          margin: 19px 0;
+          border-radius: 8px;
+        }
+
+        /* ol */
+        ol {
+          margin: 0;
+          padding-left: 18px;
+          color: #616161;
+        }
+      `}</style>
     </Page>
   );
 }
+
 
 
 
