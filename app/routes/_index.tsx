@@ -1,19 +1,13 @@
+// app/routes/_index.tsx
 import React, { useEffect, useState } from "react";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { TitleBar } from "@shopify/app-bridge-react";
-import {
-  Page,
-  Layout,
-  Card,
-  Button,
-  Thumbnail,
-} from "@shopify/polaris";
+import { Page, Layout, Card, Button, Thumbnail } from "@shopify/polaris";
 
 export default function Index() {
   const [logos, setLogos] = useState<string[]>([]);
   const app = typeof window !== "undefined" ? useAppBridge() : null;
 
-  // 初期読み込み (Metafieldから取得)
   useEffect(() => {
     fetch("/api/load-logos")
       .then((res) => res.json())
@@ -21,18 +15,15 @@ export default function Index() {
       .catch((err) => console.error("Load logos error:", err));
   }, []);
 
-  // アップロード処理
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const formData = new FormData();
     formData.append("file", file);
 
     try {
       const res = await fetch("/api/upload-logo", { method: "POST", body: formData });
       const data = await res.json();
-
       const updated = [...logos, data.url];
       setLogos(updated);
 
@@ -46,11 +37,9 @@ export default function Index() {
     }
   };
 
-  // 削除処理
   const handleDelete = async (url: string) => {
     const updated = logos.filter((l) => l !== url);
     setLogos(updated);
-
     try {
       await fetch("/api/save-logos", {
         method: "POST",
@@ -74,16 +63,9 @@ export default function Index() {
           <Card title="登録済みロゴ">
             {logos.length === 0 && <p>まだロゴがありません</p>}
             {logos.map((url, idx) => (
-              <div
-                key={idx}
-                style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}
-              >
+              <div key={idx} style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
                 <Thumbnail source={url} alt={`Logo ${idx + 1}`} size="small" />
-                <Button
-                  destructive
-                  onClick={() => handleDelete(url)}
-                  style={{ marginLeft: "10px" }}
-                >
+                <Button destructive onClick={() => handleDelete(url)} style={{ marginLeft: "10px" }}>
                   削除
                 </Button>
               </div>
@@ -94,6 +76,7 @@ export default function Index() {
     </Page>
   );
 }
+
 
 
 
