@@ -1,9 +1,10 @@
-// server.js
 require("dotenv").config();
 
 const express = require("express");
 const { createRequestHandler } = require("@remix-run/express");
 const remixBuild = require("./build/index.js");
+const { sessionStorage } = require("./app/shopify.server");
+
 const app = express();
 
 // ✅ Remix が生成する静的アセット (/public/build/*) を配信
@@ -18,6 +19,18 @@ app.use(express.static("public", { maxAge: "1h" }));
 // API endpoint の例
 app.get("/api/test", (req, res) => {
   res.json({ ok: true, shop: process.env.SHOPIFY_APP_URL || "unknown" });
+});
+
+// ✅ デバッグ: セッション一覧を確認
+app.get("/__sessions", async (req, res) => {
+  try {
+    // SQLite に保存されているセッションを全部取得
+    const result = await sessionStorage.store.selectAllSessions();
+    res.json(result);
+  } catch (err) {
+    console.error("❌ Session debug error:", err);
+    res.status(500).send("Error reading sessions");
+  }
 });
 
 // Remix ハンドラ
