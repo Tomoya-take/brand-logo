@@ -1,9 +1,12 @@
+// server.js
 require("dotenv").config();
 
 const express = require("express");
 const { createRequestHandler } = require("@remix-run/express");
 const remixBuild = require("./build/index.js");
-const { sessionStorage } = require("./app/shopify.server");
+
+// ✅ Shopify 初期化 (shopify.server.ts の default export を利用)
+const shopify = require("./app/shopify.server").default;
 
 const app = express();
 
@@ -16,21 +19,22 @@ app.use(
 // ✅ その他の public ファイルも配信
 app.use(express.static("public", { maxAge: "1h" }));
 
+// デバッグ用: 現在のセッション確認
+app.get("/__sessions", async (req, res) => {
+  try {
+    const sessions = await shopify.sessionStorage.findSessionsByShop(
+      "brand-logo-test.myshopify.com" // ←必要に応じて動的に変更可能
+    );
+    res.json(sessions);
+  } catch (err) {
+    console.error("Error fetching sessions:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // API endpoint の例
 app.get("/api/test", (req, res) => {
   res.json({ ok: true, shop: process.env.SHOPIFY_APP_URL || "unknown" });
-});
-
-// ✅ デバッグ: セッション一覧を確認
-app.get("/__sessions", async (req, res) => {
-  try {
-    // SQLite に保存されているセッションを全部取得
-    const result = await sessionStorage.store.selectAllSessions();
-    res.json(result);
-  } catch (err) {
-    console.error("❌ Session debug error:", err);
-    res.status(500).send("Error reading sessions");
-  }
 });
 
 // Remix ハンドラ
@@ -46,5 +50,6 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`✅ Server running at http://localhost:${port}`);
 });
+
 
 
