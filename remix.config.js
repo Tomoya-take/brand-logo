@@ -9,8 +9,5 @@ module.exports = {
     /^@shopify\/polaris/,
     /^@shopify\/polaris-icons/,
   ],
-  future: {
-    v2_cssSideEffectImports: true, // ← これを有効にする
-  },
 };
 
