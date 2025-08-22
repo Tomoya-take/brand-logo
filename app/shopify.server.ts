@@ -1,3 +1,10 @@
+import fs from "fs";
+
+// 絶対パスにするのが確実
+const dbPath = "/opt/render/project/src/database.sqlite";
+console.log("DEBUG: SQLite file path =", dbPath);
+console.log("DEBUG: SQLite file exists?", fs.existsSync(dbPath));
+
 console.log("DEBUG HOST =", process.env.HOST);
 console.log("DEBUG SHOPIFY_API_KEY =", process.env.SHOPIFY_API_KEY);
 
