@@ -13,7 +13,7 @@ include_config_on_deploy = true
 api_version = "2025-07"
 
 [access_scopes]
-scopes = ""
+scopes = "read_products,write_products"
 
 [auth]
 redirect_urls = [ "https://brand-logo.onrender.com/auth/callback" ]
