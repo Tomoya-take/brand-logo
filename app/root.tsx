@@ -13,7 +13,7 @@ import SafeAppBridgeProvider from "./components/SafeAppBridgeProvider";
 
 // Polaris
 import { AppProvider } from "@shopify/polaris";
-import enTranslations from "@shopify/polaris/locales/en.json";
+import * as en from "@shopify/polaris/locales/en.json";
 
 // -------------------------
 // Meta 情報
@@ -55,11 +55,12 @@ export default function App() {
       </head>
       <body>
         {/* Polaris AppProvider を追加 */}
-        <AppProvider i18n={enTranslations}>
-          <SafeAppBridgeProvider config={config}>
-            <Outlet />
-          </SafeAppBridgeProvider>
-        </AppProvider>
+<AppProvider i18n={en.default}>
+  <SafeAppBridgeProvider config={config}>
+    <Outlet />
+  </SafeAppBridgeProvider>
+</AppProvider>
+
 
         <ScrollRestoration />
         <Scripts />
@@ -77,6 +78,7 @@ export default function App() {
     </html>
   );
 }
+
 
 
 
