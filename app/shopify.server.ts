@@ -9,8 +9,6 @@ console.log("DEBUG: SQLite file path =", dbPath);
 console.log("DEBUG: SQLite file exists?", fs.existsSync(dbPath));
 
 const sessionStorage = new SQLiteSessionStorage(dbPath);
-
-// ✅ constructor.name は削除して、これだけにする
 console.log("DEBUG: Session storage initialized:", sessionStorage ? "OK" : "NG");
 
 const appUrl = process.env.HOST!;
@@ -23,10 +21,17 @@ export const shopify = shopifyApp({
   appUrl,
   hostName,
   sessionStorage,
+
+  // 👇 これを追加
+  auth: {
+    path: "/auth",
+    callbackPath: "/auth/callback",
+  },
 });
 
 export const { authenticate } = shopify;
 export default shopify;
+
 
 
 
