@@ -1,15 +1,13 @@
-// app/routes/auth.callback.tsx
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs } from "@remix-run/node";
 import shopify from "../shopify.server";
 
-// Shopify OAuth コールバック用ルート
 export async function loader({ request }: LoaderFunctionArgs) {
-  console.log("DEBUG: reached /auth/callback loader");
+  console.log("DEBUG: reached /auth/callback loader"); // 到達確認
 
-  // コールバックで必ずオンラインセッションを生成
+  // ⬇️ ここを修正
   const { session } = await shopify.auth.callback({
-    request,
-    isOnline: true,
+    isOnline: true,   // オンラインセッション作成
+    rawRequest: request,
   });
 
   console.log("DEBUG: OAuth session =", session);
@@ -18,9 +16,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     throw new Response("Unauthorized", { status: 401 });
   }
 
-  // Shopify またはアプリのトップにリダイレクト
   return shopify.redirectToShopifyOrAppRoot(session, request);
 }
+
 
 
 
