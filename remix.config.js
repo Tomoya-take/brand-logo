@@ -12,5 +12,7 @@ module.exports = {
   future: {
     v2_cssSideEffectImports: true, // ← これを有効にする
   },
+  // 👇 Polaris の CSS を side-effect import として扱う
+  watchPaths: ["./node_modules/@shopify/polaris/build/styles.css"],
 };
 
