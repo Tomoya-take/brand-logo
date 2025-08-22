@@ -1,3 +1,6 @@
+console.log("DEBUG HOST =", process.env.HOST);
+console.log("DEBUG SHOPIFY_API_KEY =", process.env.SHOPIFY_API_KEY);
+
 import 'dotenv/config';
 import { shopifyApp } from "@shopify/shopify-app-remix/server";
 import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlite";
