@@ -10,19 +10,6 @@ import {
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import SafeAppBridgeProvider from "./components/SafeAppBridgeProvider";
 
-// app/root.tsx
-import { AppProvider } from "@shopify/polaris";
-import enTranslations from "@shopify/polaris/locales/en.json"; // i18n を読み込む
-
-export default function App() {
-  return (
-    <AppProvider i18n={enTranslations}>
-      {/* Polarisを使うコンポーネントはここに */}
-      <Outlet />
-    </AppProvider>
-  );
-}
-
 // -------------------------
 // Meta 情報
 // -------------------------
@@ -58,22 +45,16 @@ export default function App() {
       <head>
         <Meta />
         <Links />
-
-        {/* ✅ Shopify App Bridge CDN を追加 */}
         <meta name="shopify-api-key" content={data.SHOPIFY_API_KEY} />
         <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
       <body>
-        {/* ✅ CSR中のみ SafeAppBridgeProvider で初期化 */}
         <SafeAppBridgeProvider config={config}>
           <Outlet />
         </SafeAppBridgeProvider>
-
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-
-        {/* window に API KEY と host を埋め込む */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -86,6 +67,7 @@ export default function App() {
     </html>
   );
 }
+
 
 
 
