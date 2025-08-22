@@ -8,6 +8,8 @@ console.log("DEBUG: SQLite file exists?", fs.existsSync(dbPath));
 console.log("DEBUG HOST =", process.env.HOST);
 console.log("DEBUG SHOPIFY_API_KEY =", process.env.SHOPIFY_API_KEY);
 
+console.log("DEBUG: Session storage type =", sessionStorage.constructor.name);
+
 import 'dotenv/config';
 import { shopifyApp } from "@shopify/shopify-app-remix/server";
 import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlite";
