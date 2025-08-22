@@ -9,13 +9,10 @@ export default function handleRequest(
   responseHeaders: Headers,
   remixContext: any
 ) {
-  // ✅ 管理画面 iframe 対応のヘッダを自動付与（超重要）
+  // ✅ 管理画面 iframe 用ヘッダを追加（必須）
   shopify.addDocumentResponseHeaders(request, responseHeaders);
 
-  const markup = renderToString(
-    <RemixServer context={remixContext} url={request.url} />
-  );
-
+  const markup = renderToString(<RemixServer context={remixContext} url={request.url} />);
   responseHeaders.set("Content-Type", "text/html");
 
   return new Response("<!DOCTYPE html>" + markup, {
@@ -23,5 +20,7 @@ export default function handleRequest(
     headers: responseHeaders,
   });
 }
+
+
 
 
