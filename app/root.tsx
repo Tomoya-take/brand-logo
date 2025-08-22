@@ -21,6 +21,7 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
+
   return {
     SHOPIFY_API_KEY: process.env.SHOPIFY_API_KEY || "",
     HOST: url.searchParams.get("host") || "",
@@ -35,6 +36,7 @@ export default function App() {
       <head>
         <Meta />
         <Links />
+        {/* App Bridge 用に API Key を埋め込む */}
         <meta name="shopify-api-key" content={data.SHOPIFY_API_KEY} />
         <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
