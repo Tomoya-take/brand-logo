@@ -15,10 +15,10 @@ export default function SafeAppBridgeProvider({
     return <>{children}</>;
   }
 
-  // host を確実に取得
-  const host = new URLSearchParams(window.location.search).get("host");
+  // props から渡された host を最優先、無ければ location.search から拾う
+  const urlHost = new URLSearchParams(window.location.search).get("host");
+  const host = config?.host || urlHost;
 
-  // 必要最低限の config を常に渡す
   const finalConfig = useMemo(
     () => ({
       apiKey,
@@ -31,6 +31,8 @@ export default function SafeAppBridgeProvider({
 
   return <AppBridgeProvider config={finalConfig}>{children}</AppBridgeProvider>;
 }
+
+
 
 
 
