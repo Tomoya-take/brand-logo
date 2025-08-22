@@ -22,20 +22,13 @@ export default function Index() {
         <Layout.Section>
           <Card>
             <BlockStack gap="500">
-              <Text as="h2" variant="headingLg">Brand Logo List 管理</Text>
               <Text as="p" tone="subdued">
-                このアプリは「オンラインストア → テーマをカスタマイズ」から利用します。管理画面では設定は不要です。
+                このアプリは「オンラインストア → テーマをカスタマイズ」から利用します。管理画面での設定は不要です。
               </Text>
 
               <InlineStack gap="300">
                 <a href={editorUrl ?? "#"} target="_top" rel="noreferrer">
                   <Button variant="primary" size="large">カスタマイズ画面を開く</Button>
-                </a>
-                <a
-                  href="https://help.shopify.com/ja/manual/online-store/themes/customizing-themes"
-                  target="_blank" rel="noreferrer"
-                >
-                  <Button>テーマカスタマイズのヘルプ</Button>
                 </a>
               </InlineStack>
 
@@ -44,16 +37,9 @@ export default function Index() {
                 <ol style={{ margin: 0, paddingLeft: 18 }}>
                   <li>オンラインストア → テーマ →「カスタマイズ」をクリック。</li>
                   <li>左サイドバーで「セクションを追加」→「アプリ」→「Brand Logo List」を追加。</li>
-                  <li>セクション設定でロゴ画像の追加・並び替え・リンク設定を行う（実装に応じて）。</li>
+                  <li>セクション設定でロゴ画像の追加・リンク設定を行う（必要に応じて）。</li>
                   <li>右上の「保存」をクリックして公開。</li>
-                  <li>下書きテーマで作業中の場合は「プレビュー」で確認→公開に切り替え。</li>
                 </ol>
-
-                <Text as="h3" variant="headingMd" tone="subdued">トラブルシュート</Text>
-                <ul style={{ margin: 0, paddingLeft: 18 }}>
-                  <li>アプリがセクション一覧に出ない → アプリがインストール済みか／テーマアプリ拡張が有効か確認。</li>
-                  <li>権限エラーが出る → アプリを再インストールして権限を再承認。</li>
-                </ul>
 
                 <Text as="h3" variant="headingMd">How to use (English)</Text>
                 <ol style={{ margin: 0, paddingLeft: 18 }}>
