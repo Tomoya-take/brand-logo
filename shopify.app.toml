@@ -16,11 +16,13 @@ scopes = "read_products,write_products"
 [auth]
 redirect_urls = [
   "https://brand-logo.onrender.com/auth/callback",
-  "https://brand-logo.onrender.com/api/auth/callback",
   "https://brand-logo.onrender.com/auth/exit-iframe"
 ]
 
 # POSを使わないなら、このブロック削除
 # [pos]
 # embedded = false
+
+[future]
+unstable_newEmbeddedAuthStrategy = true
 
