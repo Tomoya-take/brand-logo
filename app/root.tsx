@@ -1,3 +1,4 @@
+// app/root.tsx
 import {
   Links,
   LiveReload,
@@ -10,6 +11,10 @@ import {
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import SafeAppBridgeProvider from "./components/SafeAppBridgeProvider";
 
+// Polaris
+import { AppProvider } from "@shopify/polaris";
+import enTranslations from "@shopify/polaris/locales/en.json";
+
 // -------------------------
 // Meta 情報
 // -------------------------
@@ -18,7 +23,7 @@ export const meta: MetaFunction = () => {
 };
 
 // -------------------------
-// Loader: API KEY と host を渡す
+// Loader
 // -------------------------
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -49,12 +54,17 @@ export default function App() {
         <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
       <body>
-        <SafeAppBridgeProvider config={config}>
-          <Outlet />
-        </SafeAppBridgeProvider>
+        {/* Polaris AppProvider を追加 */}
+        <AppProvider i18n={enTranslations}>
+          <SafeAppBridgeProvider config={config}>
+            <Outlet />
+          </SafeAppBridgeProvider>
+        </AppProvider>
+
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -67,6 +77,7 @@ export default function App() {
     </html>
   );
 }
+
 
 
 
