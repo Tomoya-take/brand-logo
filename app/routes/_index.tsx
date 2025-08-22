@@ -1,75 +1,152 @@
 // app/routes/_index.tsx
-import React, { useEffect, useState } from "react";
+import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { useLoaderData, Form, useNavigation } from "@remix-run/react";
+import { authenticate } from "~/shopify.server";
+
+// Polaris
+import { Page, Layout, Card, BlockStack, Text, Button, InlineStack } from "@shopify/polaris";
+
+// App Bridge
 import { useAppBridge } from "@shopify/app-bridge-react";
-import { TitleBar } from "@shopify/app-bridge-react";
-import { Page, Layout, Card, Button, Thumbnail } from "@shopify/polaris";
+import { Redirect } from "@shopify/app-bridge/actions";
 
+// -------------------- Loader: shop 表示用 --------------------
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { session } = await authenticate.admin(request);
+  return json({ shop: session?.shop ?? null });
+}
+
+// -------------------- Action: 画像アップロード（Shopify Files） --------------------
+export async function action({ request }: ActionFunctionArgs) {
+  const { session } = await authenticate.admin(request);
+  if (!session) throw new Response("Unauthorized", { status: 401 });
+
+  const form = await request.formData();
+  const file = form.get("file") as File | null;
+  if (!file) return redirect("/?uploaded=0");
+
+  // --- 1) S3に一時アップロードURLを発行 ---
+  const client = new (await import("@shopify/shopify-api")).shopifyApi({
+    apiKey: process.env.SHOPIFY_API_KEY!,
+    apiSecretKey: process.env.SHOPIFY_API_SECRET!,
+    apiVersion: "2024-07",
+  }).clients.Graphql({ session });
+
+  const staged = await client.query({
+    data: {
+      query: `
+        mutation stagedUploadsCreate($input: [StagedUploadInput!]!) {
+          stagedUploadsCreate(input: $input) {
+            stagedTargets {
+              url
+              resourceUrl
+              parameters { name value }
+            }
+            userErrors { field message }
+          }
+        }
+      `,
+      variables: {
+        input: [{
+          resource: "FILE",
+          filename: file.name,
+          mimeType: file.type || "image/png",
+          httpMethod: "POST",
+          fileSize: file.size.toString(),
+        }],
+      },
+    },
+  });
+
+  const target = (staged.body as any).data.stagedUploadsCreate.stagedTargets[0];
+  const formData = new FormData();
+  for (const p of target.parameters) formData.append(p.name, p.value);
+  formData.append("file", file);
+
+  const s3res = await fetch(target.url, { method: "POST", body: formData });
+  if (!s3res.ok) return redirect("/?uploaded=0");
+
+  // --- 2) Shopify Files に登録 ---
+  const created = await client.query({
+    data: {
+      query: `
+        mutation fileCreate($files: [FileCreateInput!]!) {
+          fileCreate(files: $files) {
+            files { __typename
+              ... on MediaImage { id image { url } }
+            }
+            userErrors { field message }
+          }
+        }
+      `,
+      variables: {
+        files: [{
+          originalSource: target.resourceUrl,
+          contentType: "IMAGE",
+          alt: file.name,
+        }],
+      },
+    },
+  });
+
+  const ok = !(created.body as any).data.fileCreate.userErrors?.length;
+  return redirect(ok ? "/?uploaded=1" : "/?uploaded=0");
+}
+
+// -------------------- UI --------------------
 export default function Index() {
-  const [logos, setLogos] = useState<string[]>([]);
-  const app = typeof window !== "undefined" ? useAppBridge() : null;
+  const { shop } = useLoaderData<typeof loader>();
+  const app = useAppBridge();
+  const nav = useNavigation();
 
-  useEffect(() => {
-    fetch("/api/load-logos")
-      .then((res) => res.json())
-      .then((data) => setLogos(data || []))
-      .catch((err) => console.error("Load logos error:", err));
-  }, []);
-
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await fetch("/api/upload-logo", { method: "POST", body: formData });
-      const data = await res.json();
-      const updated = [...logos, data.url];
-      setLogos(updated);
-
-      await fetch("/api/save-logos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updated),
-      });
-    } catch (err) {
-      console.error("Upload error:", err);
-    }
-  };
-
-  const handleDelete = async (url: string) => {
-    const updated = logos.filter((l) => l !== url);
-    setLogos(updated);
-    try {
-      await fetch("/api/save-logos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updated),
-      });
-    } catch (err) {
-      console.error("Delete error:", err);
-    }
+  const openThemeEditor = () => {
+    const redirect = Redirect.create(app);
+    // テーマエディタ（アプリ用コンテキストで開く）
+    redirect.dispatch(
+      Redirect.Action.ADMIN_PATH,
+      "/themes/current/editor?context=apps"
+    );
   };
 
   return (
     <Page title="Brand Logo List 管理">
-      {app && <TitleBar title="Brand Logo List App" />}
       <Layout>
         <Layout.Section>
-          <Card sectioned>
-            <input type="file" onChange={handleUpload} />
-          </Card>
-
-          <Card title="登録済みロゴ">
-            {logos.length === 0 && <p>まだロゴがありません</p>}
-            {logos.map((url, idx) => (
-              <div key={idx} style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
-                <Thumbnail source={url} alt={`Logo ${idx + 1}`} size="small" />
-                <Button destructive onClick={() => handleDelete(url)} style={{ marginLeft: "10px" }}>
-                  削除
+          <Card>
+            <BlockStack gap="400">
+              <Text as="p">このアプリは「オンラインストア → テーマをカスタマイズ」から利用します。</Text>
+              <InlineStack gap="300">
+                <Button variant="primary" onClick={openThemeEditor}>
+                  カスタマイズ画面を開く
                 </Button>
-              </div>
-            ))}
+                <a
+                  href="https://help.shopify.com/ja/manual/online-store/themes/customizing-themes"
+                  target="_blank" rel="noreferrer"
+                >
+                  <Button>使い方（ヘルプ）</Button>
+                </a>
+              </InlineStack>
+            </BlockStack>
+          </Card>
+        </Layout.Section>
+
+        <Layout.Section>
+          <Card>
+            <BlockStack gap="400">
+              <Text as="h3" variant="headingLg">画像アップロード（任意）</Text>
+              <Form method="post" encType="multipart/form-data">
+                <input type="file" name="file" accept="image/*" />
+                <div style={{ marginTop: 12 }}>
+                  <Button submit loading={nav.state !== "idle"}>
+                    アップロード
+                  </Button>
+                </div>
+              </Form>
+              <Text as="p" tone="subdued">
+                ※ ここでアップロードした画像は Shopify の「コンテンツ → ファイル」に保存されます。
+              </Text>
+            </BlockStack>
           </Card>
         </Layout.Section>
       </Layout>
