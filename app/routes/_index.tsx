@@ -68,7 +68,7 @@ export default function Index() {
                 <Form method="post">
                   <input type="hidden" name="to" value={planUrl ?? ""} />
                   <Button submit variant="primary" size="large" disabled={!planUrl}>
-                    プランを管理する
+                    プランを管理する<br>Manage Plans
                   </Button>
                 </Form>
               </BlockStack>
@@ -83,7 +83,7 @@ export default function Index() {
                 <InlineStack gap="300">
                   <a href={editorUrl ?? "#"} target="_top" rel="noreferrer">
                     <Button size="large" disabled={!editorUrl}>
-                      カスタマイズ画面を開く
+                      カスタマイズ画面を開く<br>Customize
                     </Button>
                   </a>
                 </InlineStack>
@@ -94,7 +94,7 @@ export default function Index() {
                 <Text as="h3" variant="headingMd">使い方（日本語）</Text>
                 <ol>
                   <li>オンラインストア → テーマ →「カスタマイズ」をクリック。</li>
-                  <li>左サイドバー「セクションを追加」→「アプリ」→「Brand Logo List」を追加。</li>
+                  <li>左サイドバーで「セクションを追加」→「アプリ」→「Brand Logo List」を追加。※セクション、ブロックは複数個追加可能。</li>
                   <li>セクション設定でロゴ画像の追加・リンク設定を行う。</li>
                   <li>右上の「保存」をクリックして公開。</li>
                 </ol>
@@ -103,8 +103,8 @@ export default function Index() {
 
                 <Text as="h3" variant="headingMd">How to use (English)</Text>
                 <ol>
-                  <li>Go to <i>Online Store → Themes</i> and click <b>Customize</b>.</li>
-                  <li>Add <b>Brand Logo List</b> from <b>Add section → Apps</b>.</li>
+                  <li>Go to Online Store → Themes and click Customize.</li>
+                  <li>In the left sidebar, click Add section → Apps → add Brand Logo List. *Multiple sections and blocks can be added.</li>
                   <li>Configure: upload logos, reorder, and set links.</li>
                   <li>Click <b>Save</b> to publish.</li>
                 </ol>
