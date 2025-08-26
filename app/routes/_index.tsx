@@ -8,9 +8,11 @@ import { Page, Layout, Card, BlockStack, Text, Button, InlineStack } from "@shop
 const APP_HANDLE = "brandlogo"; // ← shopify.app.toml の handle と一致させる
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const { session } = await authenticate.admin(request);
+  const { session, billing, redirect } = await authenticate.admin(request);
+
   const shop = session?.shop ?? null;
-  const slug = shop?.endsWith(".myshopify.com") ? shop.replace(".myshopify.com", "") : null;
+  const slug =
+    shop?.endsWith(".myshopify.com") ? shop.replace(".myshopify.com", "") : null;
 
   const editorUrl = slug
     ? `https://admin.shopify.com/store/${slug}/themes/current/editor`
@@ -21,15 +23,29 @@ export async function loader({ request }: LoaderFunctionArgs) {
     ? `https://admin.shopify.com/store/${slug}/charges/${APP_HANDLE}/pricing_plans`
     : null;
 
+  // --- 未契約なら MAP のプラン画面へ自動リダイレクト（iframe を抜ける）---
+  try {
+    const { hasActivePayment } = await billing.check(); // MAPでも動作可
+    if (!hasActivePayment && planUrl) {
+      return redirect(planUrl, { target: "_top" });
+    }
+  } catch {
+    // 取得失敗時はそのまま描画（手動導線から遷移可能）
+  }
+
   return json({ editorUrl, planUrl });
 }
 
-// MAP 画面に _top で遷移（iframe を抜ける）
+// MAP 画面に _top で遷移（埋め込みiframeを抜ける）
 export async function action({ request }: ActionFunctionArgs) {
   const { redirect } = await authenticate.admin(request);
   const form = await request.formData();
   const to = String(form.get("to") || "");
   if (!to) return null;
+
+  // 念のための安全チェック（誤URLやオープンリダイレクト防止）
+  if (!to.startsWith("https://admin.shopify.com/")) return null;
+
   return redirect(to, { target: "_top" });
 }
 
@@ -51,13 +67,13 @@ export default function Index() {
                 </Text>
                 <Form method="post">
                   <input type="hidden" name="to" value={planUrl ?? ""} />
-                  <Button submit variant="primary" size="large">
+                  <Button submit variant="primary" size="large" disabled={!planUrl}>
                     プランを管理する
                   </Button>
                 </Form>
               </BlockStack>
 
-              {/* ② これまでの「テーマ編集に行く」導線（そのまま残す） */}
+              {/* ② テーマ編集への導線 */}
               <BlockStack gap="400">
                 <Text as="p" tone="subdued">
                   このアプリは「オンラインストア → テーマをカスタマイズ」から利用します。
@@ -66,7 +82,9 @@ export default function Index() {
 
                 <InlineStack gap="300">
                   <a href={editorUrl ?? "#"} target="_top" rel="noreferrer">
-                    <Button size="large">カスタマイズ画面を開く</Button>
+                    <Button size="large" disabled={!editorUrl}>
+                      カスタマイズ画面を開く
+                    </Button>
                   </a>
                 </InlineStack>
               </BlockStack>
@@ -96,7 +114,7 @@ export default function Index() {
         </Layout.Section>
       </Layout>
 
-      {/* 最低限のスタイル（必要なら調整） */}
+      {/* 最低限のスタイル */}
       <style>{`
         button { color:#fff; background:#303030; border-radius:8px; border:1px solid #303030; cursor:pointer; transition:background-color .2s }
         button:hover { background:#000; }
@@ -110,6 +128,7 @@ export default function Index() {
     </Page>
   );
 }
+
 
 
 
