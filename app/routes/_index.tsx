@@ -68,7 +68,7 @@ export default function Index() {
                 <Form method="post">
                   <input type="hidden" name="to" value={planUrl ?? ""} />
                   <Button submit variant="primary" size="large" disabled={!planUrl}>
-                    プランを管理する<br>Manage Plans
+                    プランを管理する - Manage Plans
                   </Button>
                 </Form>
               </BlockStack>
@@ -83,7 +83,7 @@ export default function Index() {
                 <InlineStack gap="300">
                   <a href={editorUrl ?? "#"} target="_top" rel="noreferrer">
                     <Button size="large" disabled={!editorUrl}>
-                      カスタマイズ画面を開く<br>Customize
+                      カスタマイズ画面を開く - Customize
                     </Button>
                   </a>
                 </InlineStack>
