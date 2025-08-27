@@ -5,47 +5,42 @@ import { useLoaderData, Form } from "@remix-run/react";
 import { authenticate } from "~/shopify.server";
 import { Page, Layout, Card, BlockStack, Text, Button, InlineStack } from "@shopify/polaris";
 
-const APP_HANDLE = "brandlogo"; // ← shopify.app.toml の handle と一致させる
+const APP_HANDLE = "brandlogo";              // ← 触らない
+const LISTING_HANDLE = "brandlogo";    // ← Manage listing の Preview URL /apps/◯◯ に合わせる
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { session, billing, redirect } = await authenticate.admin(request);
 
   const shop = session?.shop ?? null;
-  const slug =
-    shop?.endsWith(".myshopify.com") ? shop.replace(".myshopify.com", "") : null;
+  const slug = shop?.endsWith(".myshopify.com") ? shop.replace(".myshopify.com", "") : null;
 
   const editorUrl = slug
     ? `https://admin.shopify.com/store/${slug}/themes/current/editor`
     : null;
 
-  // MAP のプラン選択／アップグレード／ダウングレード／解約画面
+  // ★ ここだけ変更：listing ハンドルを使う
   const planUrl = slug
-    ? `https://admin.shopify.com/store/${slug}/charges/${APP_HANDLE}/pricing_plans`
+    ? `https://admin.shopify.com/store/${slug}/charges/${LISTING_HANDLE}/pricing_plans`
     : null;
 
-  // --- 未契約なら MAP のプラン画面へ自動リダイレクト（iframe を抜ける）---
   try {
-    const { hasActivePayment } = await billing.check(); // MAPでも動作可
+    const { hasActivePayment } = await billing.check();
     if (!hasActivePayment && planUrl) {
       return redirect(planUrl, { target: "_top" });
     }
   } catch {
-    // 取得失敗時はそのまま描画（手動導線から遷移可能）
+    // そのまま描画
   }
 
   return json({ editorUrl, planUrl });
 }
 
-// MAP 画面に _top で遷移（埋め込みiframeを抜ける）
 export async function action({ request }: ActionFunctionArgs) {
   const { redirect } = await authenticate.admin(request);
   const form = await request.formData();
   const to = String(form.get("to") || "");
   if (!to) return null;
-
-  // 念のための安全チェック（誤URLやオープンリダイレクト防止）
   if (!to.startsWith("https://admin.shopify.com/")) return null;
-
   return redirect(to, { target: "_top" });
 }
 
@@ -58,7 +53,7 @@ export default function Index() {
         <Layout.Section>
           <Card>
             <BlockStack gap="500">
-              {/* ① MAP プラン管理への導線（審査で最重要） */}
+              {/* ① MAP プラン管理への導線（文言は変更していません） */}
               <BlockStack gap="200">
                 <Text as="h3" variant="headingMd">Pricing（プラン選択・変更・解約）</Text>
                 <Text as="p" tone="subdued">
@@ -73,7 +68,7 @@ export default function Index() {
                 </Form>
               </BlockStack>
 
-              {/* ② テーマ編集への導線 */}
+              {/* ② テーマ編集への導線（文言は変更していません） */}
               <BlockStack gap="400">
                 <Text as="p" tone="subdued">
                   このアプリは「オンラインストア → テーマをカスタマイズ」から利用します。
@@ -89,7 +84,7 @@ export default function Index() {
                 </InlineStack>
               </BlockStack>
 
-              {/* ③ 使い方（日本語 / 英語） */}
+              {/* ③ 使い方（日本語 / 英語）— 変更なし */}
               <BlockStack gap="300">
                 <Text as="h3" variant="headingMd">使い方（日本語）</Text>
                 <ol>
@@ -114,7 +109,6 @@ export default function Index() {
         </Layout.Section>
       </Layout>
 
-      {/* 最低限のスタイル */}
       <style>{`
         button { color:#fff; background:#303030; border-radius:8px; border:1px solid #303030; cursor:pointer; transition:background-color .2s }
         button:hover { background:#000; }
