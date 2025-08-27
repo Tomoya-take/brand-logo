@@ -22,7 +22,3 @@ redirect_urls = [
 # POSを使わないなら、このブロック削除
 # [pos]
 # embedded = false
-
-[future]
-unstable_newEmbeddedAuthStrategy = true
-
