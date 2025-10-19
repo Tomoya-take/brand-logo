@@ -1,7 +1,7 @@
 // app/shopify.server.ts
 import "@shopify/shopify-app-remix/server/adapters/node"; // ✅ 追加: Nodeアダプタ
 import "dotenv/config";
-import { shopifyApp, LATEST_API_VERSION } from "@shopify/shopify-app-remix/server";
+import { shopifyApp } from "@shopify/shopify-app-remix/server";
 import { SQLiteSessionStorage } from "@shopify/shopify-app-session-storage-sqlite";
 import fs from "fs";
 
@@ -16,7 +16,7 @@ export const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY!,
   apiSecretKey: process.env.SHOPIFY_API_SECRET!,
   appUrl: process.env.HOST!,                               // 例: https://brand-logo.onrender.com
-  apiVersion: LATEST_API_VERSION,
+  apiVersion: "2025-07",  
   scopes: (process.env.SCOPES || "").split(",").filter(Boolean),
   sessionStorage,
 
