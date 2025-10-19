@@ -15,11 +15,11 @@ compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"
 uri = "https://brand-logo.onrender.com/webhooks/gdpr"
 
 [webhooks]
-api_version = "2024-07"
+api_version = "2025-07"
 
 [[webhooks.subscriptions]]
 compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
-uri = "https://app.example.com/webhooks"
+uri = "https://brand-logo.onrender.com/shopify/webhooks"
 
 [access_scopes]
 scopes = "read_products,write_products"
