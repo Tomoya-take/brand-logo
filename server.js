@@ -55,42 +55,42 @@ app.get("/api/test", (req, res) => {
 
 
 // GDPR必須Webhook 受信（TOMLのuri=/shopify/webhooks と一致させる）
-app.post("/shopify/webhooks", express.raw({ type: "application/json" }), async (req, res) => {
-  const topic = req.headers["x-shopify-topic"];
-  const shop = req.headers["x-shopify-shop-domain"];
-  const hmac = req.headers["x-shopify-hmac-sha256"];
+// app.post("/shopify/webhooks", express.raw({ type: "application/json" }), async (req, res) => {
+//   const topic = req.headers["x-shopify-topic"];
+//   const shop = req.headers["x-shopify-shop-domain"];
+//   const hmac = req.headers["x-shopify-hmac-sha256"];
 
-  if (!verifyShopifyWebhook(req, hmac)) {
-    console.warn("[webhook] invalid hmac");
-    return res.status(401).send("invalid signature");
-  }
+//   if (!verifyShopifyWebhook(req, hmac)) {
+//     console.warn("[webhook] invalid hmac");
+//     return res.status(401).send("invalid signature");
+//   }
 
-  let payload = {};
-  try { payload = JSON.parse(req.body.toString("utf8") || "{}"); } catch {}
+//   let payload = {};
+//   try { payload = JSON.parse(req.body.toString("utf8") || "{}"); } catch {}
 
-  console.log(`[webhook] topic=${topic} shop=${shop} len=${req.body.length}`);
+//   console.log(`[webhook] topic=${topic} shop=${shop} len=${req.body.length}`);
 
-  try {
-    switch (topic) {
-      case "customers/data_request":
-        // TODO: 顧客データ開示対応（必要ならログ記録等）
-        break;
-      case "customers/redact":
-        // TODO: 顧客データ削除（自アプリDBから該当顧客を削除）
-        break;
-      case "shop/redact":
-        // TODO: ショップ関連データ削除（自アプリDBから該当ショップデータ削除）
-        break;
-      default:
-        // 他トピック（app/uninstalled等）を同URIで受けてもOK
-        break;
-    }
-    return res.status(200).send("ok");
-  } catch (e) {
-    console.error("[webhook] handler error:", e);
-    return res.status(200).send("ok"); // 受理優先
-  }
-});
+//   try {
+//     switch (topic) {
+//       case "customers/data_request":
+//         // TODO: 顧客データ開示対応（必要ならログ記録等）
+//         break;
+//       case "customers/redact":
+//         // TODO: 顧客データ削除（自アプリDBから該当顧客を削除）
+//         break;
+//       case "shop/redact":
+//         // TODO: ショップ関連データ削除（自アプリDBから該当ショップデータ削除）
+//         break;
+//       default:
+//         // 他トピック（app/uninstalled等）を同URIで受けてもOK
+//         break;
+//     }
+//     return res.status(200).send("ok");
+//   } catch (e) {
+//     console.error("[webhook] handler error:", e);
+//     return res.status(200).send("ok"); // 受理優先
+//   }
+// });
 
 
 // Remix ハンドラ
