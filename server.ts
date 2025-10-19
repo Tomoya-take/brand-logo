@@ -6,6 +6,23 @@ import { shopify } from "./app/shopify.server";
 import webhookRouter from "./app/webhooks";
 import bodyParser from "body-parser";
 
+// 先頭付近（importの下あたり）に追加
+const _origFetch = globalThis.fetch?.bind(globalThis);
+if (_origFetch) {
+  globalThis.fetch = async (input, init) => {
+    const res = await _origFetch(input, init);
+    try {
+      const url = typeof input === "string" ? input : input.url;
+      const method = (init && init.method) || "GET";
+      if (url && (/shopify\.com/i.test(url) || /\/admin\/api\//i.test(url))) {
+        console.log(`[HTTP] ${method} ${url} -> ${res.status} ${res.statusText}`);
+      }
+    } catch {}
+    return res;
+  };
+}
+
+
 const app = express();
 
 // ✅ Shopify Auth ルートを追加
@@ -24,7 +41,7 @@ app.get("/__test", (req, res) => {
 
 // API endpoint
 app.get("/api/test", (req, res) => {
-  res.json({ ok: true, shop: process.env.SHOPIFY_APP_URL || "unknown" });
+  res.json({ ok: true, host: process.env.HOST || "unknown" });
 });
 
 // ✅ Webhook
