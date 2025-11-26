@@ -126,6 +126,50 @@ app.get("/api/check-subscription", async (req, res) => {
     res.status(500).json({ active: false, error: error.message });
   }
 });
+// 課金プラン作成用 API
+app.get("/api/create-subscription", async (req, res) => {
+  const { shop, accessToken } = req.query; // shop と token を渡す
+
+  const mutation = `
+  mutation {
+    appSubscriptionCreate(
+      name: "Basic Plan",
+      lineItems: [{
+        plan: {
+          appRecurringPricingDetails: { price: { amount: 500, currencyCode: USD } }
+        }
+      }],
+      returnUrl: "https://brand-logo.onrender.com/billing/return"
+    ) {
+      appSubscription {
+        id
+        status
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+  `;
+
+  try {
+    const response = await fetch(`https://${shop}/admin/api/2025-07/graphql.json`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": accessToken,
+      },
+      body: JSON.stringify({ query: mutation }),
+    });
+
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 
 
