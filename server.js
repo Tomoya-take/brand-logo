@@ -95,7 +95,6 @@ app.get("/api/test", (req, res) => {
 
 app.get("/api/check-subscription", async (req, res) => {
   const { shop, accessToken } = req.query; // 実際はセッションやDBから取得
-
   const query = `
     query {
       currentAppInstallation {
@@ -106,7 +105,6 @@ app.get("/api/check-subscription", async (req, res) => {
       }
     }
   `;
-
   try {
     const response = await fetch(`https://${shop}/admin/api/2025-07/graphql.json`, { // ← API version を 2025-07 に変更
       method: "POST",
@@ -116,10 +114,8 @@ app.get("/api/check-subscription", async (req, res) => {
       },
       body: JSON.stringify({ query }),
     });
-
     const data = await response.json();
     const active = data?.data?.currentAppInstallation?.activeSubscriptions?.length > 0;
-
     res.json({ active });
   } catch (error) {
     console.error(error);
@@ -131,7 +127,6 @@ app.get("/api/create-subscription", async (req, res) => {
   // shop と token を env から固定で取得
   const shop = "test-test-t-manager.myshopify.com";
   const accessToken = process.env.SHOPIFY_ACCESS_TOKEN; // <- env から取得
-
   const mutation = `
   mutation {
     appSubscriptionCreate(
@@ -163,7 +158,6 @@ app.get("/api/create-subscription", async (req, res) => {
       },
       body: JSON.stringify({ query: mutation }),
     });
-
     const data = await response.json();
     res.json(data);
   } catch (err) {
@@ -171,6 +165,15 @@ app.get("/api/create-subscription", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// Offline Token 確認用
+app.get("/api/show-token", async (req, res) => {
+  const shop = "test-test-t-manager.myshopify.com"; // 固定
+  const accessToken = process.env.SHOPIFY_ACCESS_TOKEN; // env から取得
+
+  console.log("=== Offline Token ===", accessToken); // Render のログに出力
+  res.json({ accessToken: accessToken ? "CHECK LOG" : null });
+});
+
 
 
 
