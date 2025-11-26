@@ -93,6 +93,42 @@ app.get("/api/test", (req, res) => {
 // });
 
 
+app.get("/api/check-subscription", async (req, res) => {
+  const { shop, accessToken } = req.query; // 実際はセッションやDBから取得
+
+  const query = `
+    query {
+      currentAppInstallation {
+        activeSubscriptions {
+          name
+          status
+        }
+      }
+    }
+  `;
+
+  try {
+    const response = await fetch(`https://${shop}/admin/api/2025-07/graphql.json`, { // ← API version を 2025-07 に変更
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": accessToken,
+      },
+      body: JSON.stringify({ query }),
+    });
+
+    const data = await response.json();
+    const active = data?.data?.currentAppInstallation?.activeSubscriptions?.length > 0;
+
+    res.json({ active });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ active: false, error: error.message });
+  }
+});
+
+
+
 // Remix ハンドラ
 app.all(
   "*",
