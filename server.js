@@ -128,7 +128,9 @@ app.get("/api/check-subscription", async (req, res) => {
 });
 // 課金プラン作成用 API
 app.get("/api/create-subscription", async (req, res) => {
-  const { shop, accessToken } = req.query; // shop と token を渡す
+  // shop と token を env から固定で取得
+  const shop = "test-test-t-manager.myshopify.com";
+  const accessToken = process.env.SHOPIFY_ACCESS_TOKEN; // <- env から取得
 
   const mutation = `
   mutation {
@@ -152,7 +154,6 @@ app.get("/api/create-subscription", async (req, res) => {
     }
   }
   `;
-
   try {
     const response = await fetch(`https://${shop}/admin/api/2025-07/graphql.json`, {
       method: "POST",
